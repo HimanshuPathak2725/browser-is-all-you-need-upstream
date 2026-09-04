@@ -1,0 +1,32 @@
+{
+  "candidate_files": [
+    "allergies.cpp",
+    "allergies.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/allergies",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.append.md": "fb560bc3a573362b816b336ef51ab05f09707f17041e23e940654f82d5ed1051",
+    ".docs/instructions.md": "45bd52fffb876f73e0bc00eee0346f8b5e4ff7df4e627367a3b0cf33efeca24a",
+    ".meta/config.json": "108bf6ce2d0a8202a2414726b4862d5fd88b607a239e807795275fe5398c2680",
+    ".meta/example.cpp": "b117cc8406c7b50e552c0c90bc08e754e8079ce241e5a527fd66408c569d3ce7",
+    ".meta/example.h": "7f9f9207eb7c2f014452aa36f371eb9dd1f57a4d59cf93012ddbfc364e00ee55",
+    ".meta/tests.toml": "432438273211e2d07897c564d4b5f465241315616be5e59216596eaffec27c33",
+    "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",
+    "allergies.cpp": "8c19425dabd36cc450012f97c28dfbe7b0548c0ce4caef19bc6092b10d93b3a6",
+    "allergies.h": "06987d9efc1881c2e82bdd658364a1432066c2b2aaf73ac996cde5b4974db569",
+    "allergies_test.cpp": "1eb815ad37a6792bba827c994d0db4cc0edaa57c4428271bef002901e43da798",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260"
+  },
+  "schema_version": 1,
+  "source": "official:Aider-AI/polyglot-benchmark@7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f/cpp/exercises/practice/allergies",
+  "task_id": "allergies"
+}

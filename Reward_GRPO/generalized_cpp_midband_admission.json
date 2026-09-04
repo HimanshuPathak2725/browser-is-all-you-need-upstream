@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "admission_id": "phone-number-iter14-midband-v1",
+  "source_checkpoint": {
+    "label": "phone-number-kernel12-GRPO20-iter14",
+    "run_id": "phone-number-kernel12-grpo20-spot-20260822-102653",
+    "polyglot_commit": "7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f"
+  },
+  "criterion": {
+    "metric": "fixed26 pass@1 across independent trials",
+    "required_trials": 4,
+    "minimum_passes": 1,
+    "maximum_passes": 3
+  },
+  "receipt_files": {
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a1/shard-0-receipt.json": "8e12bab13c7be61b1c897c13ef69d15dacb442df4f24d9ebe3faeeb3208f56c2",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a1/shard-1-receipt.json": "c5f35f70616b94de079597356846eb59ac32e049df3fabeb15fac43996841547",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a2/shard-0-receipt.json": "343ad8fcb38e08436cae2b6021abc9faaf704373cb8ae3730a5b14d527fc145f",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a2/shard-1-receipt.json": "5c208dbc66750e928f5d85c43d031d234e48846ed5bca17fa3dff6c6ffda7824",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a3/shard-0-receipt.json": "678ae461ff556fff2b658e0e3bd81c78a66f59ac985d145ea9b9b24ca6b888be",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a3/shard-1-receipt.json": "0cc72f1c6ca9a989f88b30e7e4b5b36dc5f6432977217d606294214f62e47346",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a4/shard-0-receipt.json": "2242cbe78486a91ca0c6bbfa570a79f2f4f2005f666504a6f2f55709bf45b07b",
+    "Reward_GRPO/generalized_cpp_grpo_evidence/phone-number-iter14-midband/a4/shard-1-receipt.json": "119724d8c8d0b897f57045c0dd5b1ecec8eb81eb0b39c80936cdb71a5f24fbc5"
+  },
+  "admitted_tasks": {
+    "allergies": {"pass_at_1": 2, "pass_with_mef": 4, "trials": 4},
+    "bank-account": {"pass_at_1": 2, "pass_with_mef": 4, "trials": 4},
+    "circular-buffer": {"pass_at_1": 3, "pass_with_mef": 3, "trials": 4},
+    "dnd-character": {"pass_at_1": 1, "pass_with_mef": 2, "trials": 4},
+    "queen-attack": {"pass_at_1": 3, "pass_with_mef": 4, "trials": 4},
+    "space-age": {"pass_at_1": 3, "pass_with_mef": 3, "trials": 4},
+    "spiral-matrix": {"pass_at_1": 2, "pass_with_mef": 2, "trials": 4},
+    "sublist": {"pass_at_1": 1, "pass_with_mef": 1, "trials": 4},
+    "yacht": {"pass_at_1": 2, "pass_with_mef": 4, "trials": 4}
+  },
+  "excluded_midband_tasks": {
+    "parallel-letter-frequency": "nondeterministic under reward-worker load",
+    "robot-name": "nondeterministic under reward-worker load"
+  }
+}

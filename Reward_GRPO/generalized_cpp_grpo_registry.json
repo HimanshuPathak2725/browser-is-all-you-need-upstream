@@ -1,0 +1,247 @@
+{
+  "dataset": {
+    "category": "generalized-cpp-curriculum",
+    "dataset_tag": "generalized-cpp-v2-heldout-monitor",
+    "midband_admission": "phone-number-iter14-midband-v1",
+    "objective_group": "aider-fixed26-transfer",
+    "official_task_id_overlap": [
+      "clock",
+      "complex-numbers",
+      "crypto-square",
+      "grade-school",
+      "kindergarten-garden",
+      "perfect-numbers",
+      "allergies",
+      "bank-account",
+      "circular-buffer",
+      "dnd-character",
+      "queen-attack",
+      "space-age",
+      "spiral-matrix",
+      "sublist",
+      "yacht"
+    ],
+    "official_training_authorized": true,
+    "source_locator": "mixed:official-fixed26-training+repository-heldout-analogs"
+  },
+  "schema_version": 1,
+  "tasks": {
+    "allergies": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "bitmask-query",
+      "fixture_dir": "multi_env_fixtures/allergies",
+      "lineage_id": "polyglot-cpp/allergies",
+      "manifest": "generalized_cpp_grpo_tasks/allergies.json",
+      "manifest_sha256": "e90052da8a41c63e2ef3cd54cd2c4e135eded33e2a4f4d034d8b5483195e2e4f",
+      "preflight_response": "allergies.cpp\n```cpp\n#include \"allergies.h\"\n\n#include <string>\n#include <map>\n#include <unordered_set>\n#include <algorithm>\n\nnamespace allergies\n{\n\nallergy_test::allergy_test(unsigned int test_result) : result(test_result){}\n\nbool allergy_test::is_allergic_to(std::string const& allergen) const\n{\n    unsigned int allergen_value = allergies::ALLERGENS.at(allergen);\n    return (result & allergen_value) == allergen_value;\n}\n\nstd::unordered_set<std::string> allergy_test::get_allergies() const\n{\n    std::unordered_set<std::string> allergies; \n    \n    for(auto const& entry : allergies::ALLERGENS)\n        if((result & entry.second) == entry.second)\n            allergies.insert(entry.first);\n\n    return allergies;\n}\n\n}\n```\n\nallergies.h\n```cpp\n#if !defined(ALLERGIES_H)\n#define ALLERGIES_H\n\n#include <string>\n#include <map>\n#include <unordered_set>\n\nnamespace allergies\n{\n\nstd::map<std::string, unsigned int> const ALLERGENS {\n    {\"eggs\", 1},\n    {\"peanuts\", 2},\n    {\"shellfish\", 4},\n    {\"strawberries\", 8},\n    {\"tomatoes\", 16},\n    {\"chocolate\", 32},\n    {\"pollen\", 64},\n    {\"cats\", 128}\n};\n\nclass allergy_test\n{\npublic:\n    allergy_test(unsigned int test_result);\n\n    bool is_allergic_to(std::string const& allergen) const;\n    std::unordered_set<std::string> get_allergies() const;\n\nprivate:\n    unsigned int const result;\n};\n\n}\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "bank-account": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "stateful-api",
+      "fixture_dir": "multi_env_fixtures/bank-account",
+      "lineage_id": "polyglot-cpp/bank-account",
+      "manifest": "generalized_cpp_grpo_tasks/bank-account.json",
+      "manifest_sha256": "c4db0afcfb0d826d99509684250477cd8068edc894fd044cb6704a0d2dde9393",
+      "preflight_response": "bank_account.cpp\n```cpp\n#include \"bank_account.h\"\n\n#include <stdexcept>\n\nnamespace Bankaccount {\nvoid Bankaccount::open() {\n    if (open_) {\n        throw std::runtime_error{\"account already open\"};\n    }\n    open_ = true;\n    balance_ = 0;\n}\n\nvoid Bankaccount::deposit(int amount) {\n    std::lock_guard guard(mutex_);\n    check_account_open();\n    check_amount_greater_zero(amount);\n\n    balance_ += amount;\n}\n\nvoid Bankaccount::withdraw(int amount) {\n    std::lock_guard guard(mutex_);\n\n    check_account_open();\n    check_amount_greater_zero(amount);\n\n    if (amount > balance_) {\n        throw std::runtime_error{\n            \"amount must be less or equal than current balance\"};\n    }\n    balance_ -= amount;\n}\n\nvoid Bankaccount::close() {\n    check_account_open();\n    open_ = false;\n}\n\nint Bankaccount::balance() {\n    std::lock_guard guard(mutex_);\n    check_account_open();\n    return balance_;\n}\n\nvoid Bankaccount::check_account_open() const {\n    if (!open_) {\n        throw std::runtime_error{\"account not open\"};\n    }\n}\n\nvoid Bankaccount::check_amount_greater_zero(int amount) const {\n    if (amount < 0) {\n        throw std::runtime_error{\"amount must be greater than 0\"};\n    }\n}\n}  // namespace Bankaccount\n```\n\nbank_account.h\n```cpp\n#if !defined(BANK_ACCOUNT_H)\n#define BANK_ACCOUNT_H\n\n#include <mutex>\n\nnamespace Bankaccount {\nclass Bankaccount {\n   public:\n    void open();\n    void deposit(int amount);\n    void withdraw(int amount);\n    void close();\n    int balance();\n\n   private:\n    void check_account_open() const;\n    void check_amount_greater_zero(int amount) const;\n\n    int balance_{0};\n    bool open_{false};\n    std::mutex mutex_{};\n};\n}  // namespace Bankaccount\n#endif  // BANK_ACCOUNT_H\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "circular-buffer": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "generic-data-structure",
+      "fixture_dir": "multi_env_fixtures/circular-buffer",
+      "lineage_id": "polyglot-cpp/circular-buffer",
+      "manifest": "generalized_cpp_grpo_tasks/circular-buffer.json",
+      "manifest_sha256": "9066a10054fb157932d9cef08efd78e51aca38964ebacd8f7b59804dd9bb170f",
+      "preflight_response": "circular_buffer.cpp\n```cpp\n#include \"circular_buffer.h\"\n\nnamespace circular_buffer {\n\n}  // namespace circular_buffer\n```\n\ncircular_buffer.h\n```cpp\n#if !defined(CIRCULAR_BUFFER_H_)\n#define CIRCULAR_BUFFER_H_\n\n#include <vector>\n#include <stdexcept>\n\nnamespace circular_buffer {\n\ntemplate <typename ValueType>\nclass circular_buffer {\npublic:\n    circular_buffer(std::size_t capacity) \n        : buffer_(capacity + 1), head_(0), tail_(0) {}\n    ValueType read();\n    void write(ValueType item);\n    void overwrite(ValueType item);\n    void clear() { head_ = tail_; }\n\nprivate:\n    std::vector<ValueType> buffer_;\n    std::size_t head_;\n    std::size_t tail_;\n\n    void push_back(ValueType item);\n    void move_position(std::size_t& position) { position = (position + 1) % buffer_.size(); }\n    bool is_empty() const { return head_ == tail_; }\n    bool is_full() const { return head_ == (tail_ + 1) % buffer_.size(); }\n};\n\ntemplate <typename ValueType>\nValueType circular_buffer<ValueType>::read() {\n    if (is_empty()) throw std::domain_error(\"Circular buffer is empty.\"); \n    ValueType item = buffer_[head_];\n    move_position(head_);\n    return item;\n}\n\ntemplate <typename ValueType>\nvoid circular_buffer<ValueType>::write(ValueType item) {\n    if (is_full()) throw std::domain_error(\"Circular buffer is full.\");\n    push_back(item);\n}\n\ntemplate <typename ValueType>\nvoid circular_buffer<ValueType>::overwrite(ValueType item) {\n    if (is_full()) move_position(head_);\n    push_back(item);\n}\n\ntemplate <typename ValueType>\nvoid circular_buffer<ValueType>::push_back(ValueType item) {\n    buffer_[tail_] = item;\n    move_position(tail_);\n}\n\n} // namespace circular_buffer\n\n#endif // !CIRCULAR_BUFFER_H_\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "clock": {
+      "admission_evidence": "legacy-september-1-curriculum",
+      "family": "modular-time",
+      "fixture_dir": "multi_env_fixtures/clock",
+      "lineage_id": "polyglot-cpp/clock",
+      "manifest": "generalized_cpp_grpo_tasks/clock.json",
+      "manifest_sha256": "088d3ee39bb467bdbdea3a56d2e0b00650af9c35dcf9c1088c48bdbf42fab73f",
+      "preflight_response": "clock.cpp\n```cpp\n#include \"clock.h\"\n#include <iomanip>\n#include <sstream>\n\nusing namespace std;\n\nnamespace\n{\n\nconst int minutes_per_hour = 60;\nconst int hours_per_day = 24;\n\n}\n\nnamespace date_independent\n{\n\nclock& clock::plus(int minutes)\n{\n    minute_ += minutes;\n    clean();\n    return *this;\n}\n\nclock& clock::minus(int minutes)\n{\n    minute_ -= minutes;\n    clean();\n    return *this;\n}\n\nclock::operator string() const\n{\n    ostringstream str;\n    str << setw(2) << setfill('0') << hour_ << ':' << setw(2) << setfill('0') << minute_;\n    return str.str();\n}\n\nclock::clock(int hour, int minute)\n    : hour_(hour),\n    minute_(minute)\n{\n    clean();\n}\n\nvoid clock::clean()\n{\n    if (minute_ < 0) {\n        int tmp = 1 + (minute_ / -minutes_per_hour);\n        hour_ -= tmp;\n        minute_ += minutes_per_hour * tmp;\n    }\n    if (hour_ < 0)\n        hour_ += hours_per_day*(1 + (hour_ / -hours_per_day));\n    hour_ += minute_ / minutes_per_hour;\n    hour_ %= hours_per_day;\n    minute_ %= minutes_per_hour;\n}\n\nclock clock::at(int hour, int minute /*= 0*/)\n{\n    return clock(hour, minute);\n}\n\nbool clock::operator==(const clock& rhs) const\n{\n    return hour_ == rhs.hour_\n        && minute_ == rhs.minute_;\n}\n\n}\n```\n\nclock.h\n```cpp\n#if !defined(CLOCK_H)\n#define CLOCK_H\n\n#include <string>\n\nnamespace date_independent\n{\n\nclass clock\n{\npublic:\n    static clock at(int hour, int minute = 0);\n\n    clock& plus(int minutes);\n    clock& minus(int minutes);\n\n    operator std::string() const;\n\n    bool operator==(const clock& rhs) const;\n\nprivate:\n    clock(int hour, int minute);\n    void clean();\n    int hour_;\n    int minute_;\n};\n\ninline bool operator!=(const clock& lhs, const clock& rhs)\n{\n    return !(lhs == rhs);\n}\n\n}\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "columnar-code": {
+      "admission_evidence": "heldout-monitor-v1",
+      "family": "string-grid-formatting",
+      "fixture_dir": "multi_env_fixtures/columnar-code",
+      "lineage_id": "heldout-analog-v1/columnar-code",
+      "manifest": "generalized_cpp_grpo_tasks/columnar-code.json",
+      "manifest_sha256": "9b5b0726efb6ff778f40fee8481e280610a3541766ca9110b7542fd73561ffab",
+      "preflight_response": "columnar_code.cpp\n```cpp\n#include \"columnar_code.h\"\n\n#include <cctype>\n#include <stdexcept>\n\nnamespace columnar {\n\nstd::string normalize(std::string_view text) {\n    std::string result;\n    for (const char ch : text) {\n        const auto value = static_cast<unsigned char>(ch);\n        if (std::isalnum(value)) {\n            result.push_back(static_cast<char>(std::tolower(value)));\n        }\n    }\n    return result;\n}\n\nstd::string encode(std::string_view text, std::size_t columns) {\n    if (columns == 0) {\n        throw std::invalid_argument(\"columns must be positive\");\n    }\n    const std::string clean = normalize(text);\n    if (clean.empty()) {\n        return {};\n    }\n    const std::size_t rows = (clean.size() + columns - 1) / columns;\n    std::string result;\n    for (std::size_t column = 0; column < columns; ++column) {\n        if (column != 0) {\n            result.push_back(' ');\n        }\n        for (std::size_t row = 0; row < rows; ++row) {\n            const std::size_t index = row * columns + column;\n            result.push_back(index < clean.size() ? clean[index] : '_');\n        }\n    }\n    return result;\n}\n\n}\n```\n\ncolumnar_code.h\n```cpp\n#pragma once\n\n#include <cstddef>\n#include <string>\n#include <string_view>\n\nnamespace columnar {\n\nstd::string normalize(std::string_view text);\nstd::string encode(std::string_view text, std::size_t columns);\n\n}\n```\n",
+      "train": false,
+      "validation": true
+    },
+    "complex-numbers": {
+      "admission_evidence": "legacy-september-1-curriculum",
+      "family": "numeric-object-api",
+      "fixture_dir": "multi_env_fixtures/complex-numbers",
+      "lineage_id": "polyglot-cpp/complex-numbers",
+      "manifest": "generalized_cpp_grpo_tasks/complex-numbers.json",
+      "manifest_sha256": "3ffd8a050ca1161e929d14d2fca1b018e4e6bbe5ea2e1664b44c22286ec78ed0",
+      "preflight_response": "complex_numbers.cpp\n```cpp\n#include <cmath>\n#include <limits>\n\n#include \"complex_numbers.h\"\n\nnamespace complex_numbers {\n\nComplex::Complex(double r, double i) : re(r), im(i) {}\n\nComplex Complex::operator+(const Complex& other) const {\n    Complex sum{re + other.re, im + other.im};\n    return sum;\n}\n\nComplex Complex::operator-(const Complex& other) const {\n    Complex diff{re - other.re, im - other.im};\n    return diff;\n}\n\nComplex Complex::operator*(const Complex& other) const {\n    Complex prod{re * other.re - im * other.im, im * other.re + re * other.im};\n    return prod;\n}\n\nComplex Complex::operator/(const Complex& other) const {\n    Complex quot{(re * other.re + im * other.im) /\n                     (other.re * other.re + other.im * other.im),\n                 (im * other.re - re * other.im) /\n                     (other.re * other.re + other.im * other.im)};\n    return quot;\n}\n\ndouble Complex::abs() const { return sqrt(re * re + im * im); }\n\nComplex Complex::conj() const {\n    Complex cx{re, -im};\n    return cx;\n}\n\ndouble Complex::real() const { return re; }\n\ndouble Complex::imag() const { return im; }\n\nComplex Complex::exp() const {\n    Complex ex{std::exp(re) * std::cos(im), std::exp(re) * std::sin(im)};\n    return ex;\n}\n\nbool operator==(const Complex& lhs, const Complex& rhs) {\n    return lhs.real() == rhs.real() && lhs.imag() == rhs.imag();\n}\n\nstd::ostream& operator<<(std::ostream& os, Complex const& value) {\n    os << \"(\" << value.real() << \",\" << value.imag() << \")\";\n    return os;\n}\n\nComplex operator+(const Complex& complex, double scalar) {\n    Complex sum{complex.real() + scalar, complex.imag()};\n    return sum;\n}\n\nComplex operator+(double scalar, const Complex& complex) {\n    Complex sum{complex.real() + scalar, complex.imag()};\n    return sum;\n}\n\nComplex operator-(const Complex& complex, double scalar) {\n    Complex diff{complex.real() - scalar, complex.imag()};\n    return diff;\n}\n\nComplex operator-(double scalar, const Complex& complex) {\n    Complex diff{scalar - complex.real(), 0 - complex.imag()};\n    return diff;\n}\n\nComplex operator*(const Complex& complex, double scalar) {\n    Complex prod{complex.real() * scalar, complex.imag() * scalar};\n    return prod;\n}\n\nComplex operator*(double scalar, const Complex& complex) {\n    Complex prod{complex.real() * scalar, complex.imag() * scalar};\n    return prod;\n}\n\nComplex operator/(const Complex& complex, double scalar) {\n    Complex other{scalar, 0};\n    return complex / other;\n}\n\nComplex operator/(double scalar, const Complex& complex) {\n    Complex other{scalar, 0};\n    return other / complex;\n}\n\n}  // namespace complex_numbers\n```\n\ncomplex_numbers.h\n```cpp\n#if !defined(COMPLEX_NUMBERS_H)\n#define COMPLEX_NUMBERS_H\n#include <iostream>\n\nnamespace complex_numbers {\n\nclass Complex {\n   public:\n    Complex(double, double);\n    Complex operator+(const Complex& other) const;\n    Complex operator-(const Complex& other) const;\n    Complex operator*(const Complex& other) const;\n    Complex operator/(const Complex& other) const;\n    \n    double abs() const;\n    Complex conj() const;\n    double real() const;\n    double imag() const;\n    Complex exp() const;\n\n   private:\n    double re, im;\n};\n\nbool operator==(const Complex& lhs, const Complex& rhs);\nstd::ostream& operator<<(std::ostream& os, Complex const& value);\nComplex operator+(const Complex& complex, double scalar);\nComplex operator+(double scalar, const Complex& complex);\nComplex operator-(const Complex& complex, double scalar);\nComplex operator-(double scalar, const Complex& complex);\nComplex operator*(const Complex& complex, double scalar);\nComplex operator*(double scalar, const Complex& complex);\nComplex operator/(const Complex& complex, double scalar);\nComplex operator/(double scalar, const Complex& complex);\n\n}  // namespace complex_numbers\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "crypto-square": {
+      "admission_evidence": "legacy-september-1-curriculum",
+      "family": "string-grid-formatting",
+      "fixture_dir": "multi_env_fixtures/crypto-square",
+      "lineage_id": "polyglot-cpp/crypto-square",
+      "manifest": "generalized_cpp_grpo_tasks/crypto-square.json",
+      "manifest_sha256": "0a3aa486377a96b80fc74843c6258196faf4184b4a33c0deb3f048d836eb1984",
+      "preflight_response": "crypto_square.cpp\n```cpp\n#include \"crypto_square.h\"\n#include <algorithm>\n#include <cctype>\n#include <iterator>\n\nusing namespace std;\n\nnamespace\n{\n\nstring to_lower_copy(string const& s)\n{\n    string cpy(s);\n    for (auto& c: cpy) {\n        c = tolower(c);\n    }\n    return cpy;\n}\n\nstring normalize(string const& text)\n{\n    string result;\n    copy_if(text.begin(), text.end(), back_inserter(result),\n        [](const char c) { return !isspace(c) && !ispunct(c); });\n    return to_lower_copy(result);\n}\n\n}\n\nnamespace crypto_square\n{\n\ncipher::cipher(string const& text)\n    : text_(normalize(text))\n{\n}\n\nstring cipher::normalize_plain_text() const\n{\n    return text_;\n}\n\nsize_t cipher::size() const\n{\n    size_t length = 0;\n    while (length*length < text_.size()) {\n        ++length;\n    }\n    return length;\n}\n\nvector<string> cipher::plain_text_segments() const\n{\n    vector<string> segments;\n    const size_t segment_size{size()};\n    for (size_t i = 0; i < text_.length(); i += segment_size) {\n        segments.push_back(text_.substr(i, segment_size));\n    }\n    return segments;\n}\n\nstring cipher::cipher_text() const\n{\n    string s{normalized_cipher_text()};\n    if (!s.empty()) {\n        s.erase(remove(s.begin(), s.end(), ' '), s.end());\n    }\n    return s;\n}\n\nstring cipher::normalized_cipher_text() const\n{\n    const auto num_rows = size();\n    const auto plain = plain_text_segments();\n    string result;\n    for (size_t i = 0; i < num_rows; ++i) {\n        for (string const& s : plain) {\n            if (s.length() > i) {\n                result += s[i];\n            }\n            else {\n                result += ' ';\n            }\n        }\n        result += ' ';\n    }\n    if (!result.empty()) {\n        result.pop_back();\n    }\n    return result;\n}\n\n}\n```\n\ncrypto_square.h\n```cpp\n#if !defined(CRYPTO_SQUARE_H)\n#define CRYPTO_SQUARE_H\n\n#include <string>\n#include <vector>\n\nnamespace crypto_square\n{\n\nclass cipher\n{\npublic:\n    cipher(std::string const& text);\n\n    std::string normalize_plain_text() const;\n\n    std::size_t size() const;\n\n    std::vector<std::string> plain_text_segments() const;\n\n    std::string cipher_text() const;\n\n    std::string normalized_cipher_text() const;\n\nprivate:\n    std::string const text_;\n};\n\n}\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "cyclic-schedule": {
+      "admission_evidence": "heldout-monitor-v1",
+      "family": "modular-date-time",
+      "fixture_dir": "multi_env_fixtures/cyclic-schedule",
+      "lineage_id": "heldout-analog-v1/cyclic-schedule",
+      "manifest": "generalized_cpp_grpo_tasks/cyclic-schedule.json",
+      "manifest_sha256": "8f616d2fff8342d8fd63465d0faa8440361f102f8c6d44f33d7c17664ef3f660",
+      "preflight_response": "cyclic_schedule.cpp\n```cpp\n#include \"cyclic_schedule.h\"\n\n#include <iomanip>\n#include <sstream>\n\nnamespace cyclic_schedule {\nnamespace {\nconstexpr long long minutes_per_day = 24 * 60;\nconstexpr long long minutes_per_week = 7 * minutes_per_day;\n\nlong long normalized(long long value) {\n    value %= minutes_per_week;\n    return value < 0 ? value + minutes_per_week : value;\n}\n}\n\nweekly_time::weekly_time(long long minute_of_week)\n    : minute_of_week_(normalized(minute_of_week)) {}\n\nweekly_time weekly_time::at(int weekday, int hour, int minute) {\n    return weekly_time(\n        static_cast<long long>(weekday) * minutes_per_day\n        + static_cast<long long>(hour) * 60 + minute);\n}\n\nweekly_time& weekly_time::advance(long long minutes) {\n    minute_of_week_ = normalized(minute_of_week_ + minutes);\n    return *this;\n}\n\nweekly_time& weekly_time::rewind(long long minutes) {\n    return advance(-minutes);\n}\n\nint weekly_time::weekday() const {\n    return static_cast<int>(minute_of_week_ / minutes_per_day);\n}\n\nint weekly_time::hour() const {\n    return static_cast<int>((minute_of_week_ % minutes_per_day) / 60);\n}\n\nint weekly_time::minute() const {\n    return static_cast<int>(minute_of_week_ % 60);\n}\n\nstd::string weekly_time::str() const {\n    std::ostringstream out;\n    out << 'D' << weekday() << ' ' << std::setw(2) << std::setfill('0')\n        << hour() << ':' << std::setw(2) << minute();\n    return out.str();\n}\n\nbool weekly_time::operator==(const weekly_time& other) const {\n    return minute_of_week_ == other.minute_of_week_;\n}\n\n}\n```\n\ncyclic_schedule.h\n```cpp\n#pragma once\n\n#include <string>\n\nnamespace cyclic_schedule {\n\nclass weekly_time {\n  public:\n    static weekly_time at(int weekday, int hour, int minute = 0);\n    weekly_time& advance(long long minutes);\n    weekly_time& rewind(long long minutes);\n    int weekday() const;\n    int hour() const;\n    int minute() const;\n    std::string str() const;\n    bool operator==(const weekly_time& other) const;\n\n  private:\n    explicit weekly_time(long long minute_of_week);\n    long long minute_of_week_{0};\n};\n\n}\n```\n",
+      "train": false,
+      "validation": true
+    },
+    "dnd-character": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "numeric-rules-randomness",
+      "fixture_dir": "multi_env_fixtures/dnd-character",
+      "lineage_id": "polyglot-cpp/dnd-character",
+      "manifest": "generalized_cpp_grpo_tasks/dnd-character.json",
+      "manifest_sha256": "ded6e7f725033fa9e9a6d5075d6a586c6bc22b8ba30f4d6410eb12d3ca0d6515",
+      "preflight_response": "dnd_character.cpp\n```cpp\n#include \"dnd_character.h\"\n\n#include <algorithm>\n#include <cmath>\n#include <cstdlib>\n#include <numeric>\n\nnamespace dnd_character {\nint modifier(int score) {\n    return std::floor((static_cast<double>(score) - 10) / 2);\n}\n\nint dice_roll() { return 1 + std::rand() / ((RAND_MAX + 1u) / 6); }\n\nint ability() {\n    auto rolls = {dice_roll(), dice_roll(), dice_roll(), dice_roll()};\n    auto discard = std::min(rolls);\n\n    return std::accumulate(rolls.begin(), rolls.end(), 0) - discard;\n}\n}  // namespace dnd_character\n```\n\ndnd_character.h\n```cpp\n#pragma once\n\nnamespace dnd_character {\nint modifier(int score);\nint ability();\n\nstruct Character {\n    Character() {\n        strength = ability();\n        dexterity = ability();\n        constitution = ability();\n        intelligence = ability();\n        wisdom = ability();\n        charisma = ability();\n        hitpoints = 10 + modifier(constitution);\n    };\n    int strength;\n    int dexterity;\n    int constitution;\n    int intelligence;\n    int wisdom;\n    int charisma;\n    int hitpoints;\n};\n\n}  // namespace dnd_character\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "factor-balance": {
+      "admission_evidence": "heldout-monitor-v1",
+      "family": "math-rules",
+      "fixture_dir": "multi_env_fixtures/factor-balance",
+      "lineage_id": "heldout-analog-v1/factor-balance",
+      "manifest": "generalized_cpp_grpo_tasks/factor-balance.json",
+      "manifest_sha256": "44ef0d6fd5ae0bdcd19f5f3a7836652a75f66478576a98747f6fda9df33f5cc3",
+      "preflight_response": "factor_balance.cpp\n```cpp\n#include \"factor_balance.h\"\n\n#include <stdexcept>\n\nnamespace factor_balance {\n\nint proper_factor_sum(int value) {\n    if (value <= 0) {\n        throw std::domain_error(\"value must be positive\");\n    }\n    if (value == 1) {\n        return 0;\n    }\n    int sum = 1;\n    for (int divisor = 2; divisor <= value / divisor; ++divisor) {\n        if (value % divisor != 0) {\n            continue;\n        }\n        sum += divisor;\n        const int paired = value / divisor;\n        if (paired != divisor) {\n            sum += paired;\n        }\n    }\n    return sum;\n}\n\nbalance classify(int value) {\n    const int sum = proper_factor_sum(value);\n    if (sum < value) {\n        return balance::light;\n    }\n    if (sum > value) {\n        return balance::heavy;\n    }\n    return balance::equal;\n}\n\nstd::vector<balance> classify_range(int first, int last) {\n    std::vector<balance> result;\n    if (first > last) {\n        return result;\n    }\n    for (int value = first; value <= last; ++value) {\n        result.push_back(classify(value));\n    }\n    return result;\n}\n\n}\n```\n\nfactor_balance.h\n```cpp\n#pragma once\n\n#include <vector>\n\nnamespace factor_balance {\n\nenum class balance { light, equal, heavy };\n\nint proper_factor_sum(int value);\nbalance classify(int value);\nstd::vector<balance> classify_range(int first, int last);\n\n}\n```\n",
+      "train": false,
+      "validation": true
+    },
+    "grade-school": {
+      "admission_evidence": "legacy-september-1-curriculum",
+      "family": "ordered-aggregation",
+      "fixture_dir": "multi_env_fixtures/grade-school",
+      "lineage_id": "polyglot-cpp/grade-school",
+      "manifest": "generalized_cpp_grpo_tasks/grade-school.json",
+      "manifest_sha256": "79f50b2d13bd9e05a2168512d919a571970251b37e2920a77f1e69195368a10d",
+      "preflight_response": "grade_school.cpp\n```cpp\n#include \"grade_school.h\"\n#include <algorithm>\n\nusing namespace std;\n\nnamespace grade_school\n{\n\nvoid school::add(string const& name, int grade)\n{\n    vector<string>& grade_roster = roster_[grade];\n    auto it = lower_bound(grade_roster.begin(), grade_roster.end(), name);\n    grade_roster.insert(it, name);\n}\n\nvector<string> school::grade(int grade) const\n{\n    auto it = roster_.find(grade);\n    return (it != roster_.end()) ? it->second : vector<string>{};\n}\n\n}\n```\n\ngrade_school.h\n```cpp\n#if !defined(GRADE_SCHOOL_H)\n#define GRADE_SCHOOL_H\n\n#include <map>\n#include <string>\n#include <vector>\n\nnamespace grade_school\n{\n\nclass school\n{\npublic:\n    const std::map<int, std::vector<std::string>>& roster() const {\n        return roster_;\n    }\n\n    void add(std::string const& name, int grade);\n\n    std::vector<std::string> grade(int grade) const;\n\nprivate:\n    std::map<int, std::vector<std::string>> roster_;\n};\n\n}\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "kindergarten-garden": {
+      "admission_evidence": "legacy-september-1-curriculum",
+      "family": "indexed-mapping",
+      "fixture_dir": "multi_env_fixtures/kindergarten-garden",
+      "lineage_id": "polyglot-cpp/kindergarten-garden",
+      "manifest": "generalized_cpp_grpo_tasks/kindergarten-garden.json",
+      "manifest_sha256": "cd9d939189987e8b9eba11429a6ff1af0dd7546848ae5a55a8de820cc3dc0529",
+      "preflight_response": "kindergarten_garden.cpp\n```cpp\n#include \"kindergarten_garden.h\"\n\n#include <algorithm>\n\nnamespace kindergarten_garden {\n\nstd::array<Plants, 4> plants(std::string_view diagram,\n                             std::string_view student) {\n    const int first_plant_index = 2 * (student.at(0) - 'A');\n    const size_t second_plant_index{diagram.find('\\n') + first_plant_index + 1};\n    const std::array<char, 4> positions{\n        diagram[first_plant_index], diagram[first_plant_index + 1],\n        diagram[second_plant_index], diagram[second_plant_index + 1]};\n    std::array<Plants, 4> result;\n    std::transform(positions.cbegin(), positions.cend(), result.begin(),\n                   [](char c) { return static_cast<Plants>(c); });\n\n    return result;\n}\n\n}  // namespace kindergarten_garden\n```\n\nkindergarten_garden.h\n```cpp\n#pragma once\n\n#include <array>\n#include <string_view>\n\nnamespace kindergarten_garden {\n\nenum class Plants : char { grass = 'G', clover = 'C', radishes = 'R', violets = 'V' };\n\nstd::array<Plants, 4> plants(std::string_view diagram,\n                             std::string_view student);\n}  // namespace kindergarten_garden\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "league-table": {
+      "admission_evidence": "heldout-monitor-v1",
+      "family": "deterministic-aggregation",
+      "fixture_dir": "multi_env_fixtures/league-table",
+      "lineage_id": "heldout-analog-v1/league-table",
+      "manifest": "generalized_cpp_grpo_tasks/league-table.json",
+      "manifest_sha256": "3c56d15d99a9a608f3ae31a5ba93e8d307589f88fe47bf25e4efef9972b26984",
+      "preflight_response": "league_table.cpp\n```cpp\n#include \"league_table.h\"\n\n#include <algorithm>\n\nnamespace league {\n\nbool standing::operator==(const standing& other) const {\n    return name == other.name && points == other.points;\n}\n\nvoid table::record(const std::string& name, int points) {\n    points_[name] += points;\n}\n\nint table::points_for(const std::string& name) const {\n    const auto found = points_.find(name);\n    return found == points_.end() ? 0 : found->second;\n}\n\nstd::vector<standing> table::standings() const {\n    std::vector<standing> result;\n    for (const auto& item : points_) {\n        result.push_back({item.first, item.second});\n    }\n    std::sort(result.begin(), result.end(), [](const standing& left,\n                                                const standing& right) {\n        if (left.points != right.points) {\n            return left.points > right.points;\n        }\n        return left.name < right.name;\n    });\n    return result;\n}\n\nstd::size_t table::teams() const {\n    return points_.size();\n}\n\n}\n```\n\nleague_table.h\n```cpp\n#pragma once\n\n#include <cstddef>\n#include <map>\n#include <string>\n#include <vector>\n\nnamespace league {\n\nstruct standing {\n    std::string name;\n    int points;\n    bool operator==(const standing& other) const;\n};\n\nclass table {\n  public:\n    void record(const std::string& name, int points);\n    int points_for(const std::string& name) const;\n    std::vector<standing> standings() const;\n    std::size_t teams() const;\n\n  private:\n    std::map<std::string, int> points_;\n};\n\n}\n```\n",
+      "train": false,
+      "validation": true
+    },
+    "perfect-numbers": {
+      "admission_evidence": "legacy-september-1-curriculum",
+      "family": "math-classification",
+      "fixture_dir": "multi_env_fixtures/perfect-numbers",
+      "lineage_id": "polyglot-cpp/perfect-numbers",
+      "manifest": "generalized_cpp_grpo_tasks/perfect-numbers.json",
+      "manifest_sha256": "0a573d09f827e68a08f2bee68a7c5958414a4f520e13082380b2414e557ad3a2",
+      "preflight_response": "perfect_numbers.cpp\n```cpp\n#include <cmath>\n#include <stdexcept>\n\n#include \"perfect_numbers.h\"\n\nusing namespace std;\n\nconstexpr int aliquot(const int n) {\n    if (n == 1) {\n        return 0;\n    }\n    int acc = 1;\n    for (int i = 2; i <= sqrt(n); ++i) {\n        if ((n % i) == 0) {\n            acc += i;\n            int complement = n / i;\n            if (complement != i) {\n                acc += complement;\n            }\n        }\n    }\n    return acc;\n}\n\nnamespace perfect_numbers {\nclassification classify(int n) {\n    if (n <= 0) {\n        throw std::domain_error(\"Input must be a positive integer\");\n    }\n    int aliq = aliquot(n);\n    if (aliq < n) {\n        return classification::deficient;\n    }\n    if (aliq > n) {\n        return classification::abundant;\n    }\n    return classification::perfect;\n}\n}  // namespace perfect_numbers\n```\n\nperfect_numbers.h\n```cpp\n#if !defined(PERFECT_NUMBERS_H)\n#define PERFECT_NUMBERS_H\n\nnamespace perfect_numbers {\nenum class classification { deficient, perfect, abundant };\n\nclassification classify(int n);\n\n}  // namespace perfect_numbers\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "portable-arithmetic": {
+      "fixture_dir": "generalized_cpp_grpo_canary/fixture",
+      "manifest": "generalized_cpp_grpo_canary/manifest.json",
+      "manifest_sha256": "23c57133354f5fb49fabf7138eb6e9850dcf090d8fee139f14b313558c611838",
+      "preflight_response": "arithmetic.h\n```cpp\n#pragma once\nnamespace demo { int add(int, int); int multiply(int, int); }\n```\n\narithmetic.cpp\n```cpp\n#include \"arithmetic.h\"\nnamespace demo { int add(int a, int b) { return a + b; } int multiply(int a, int b) { return a * b; } }\n```\n",
+      "starter_dir": "generalized_cpp_grpo_canary/fixture",
+      "train": false
+    },
+    "queen-attack": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "coordinate-validation",
+      "fixture_dir": "multi_env_fixtures/queen-attack",
+      "lineage_id": "polyglot-cpp/queen-attack",
+      "manifest": "generalized_cpp_grpo_tasks/queen-attack.json",
+      "manifest_sha256": "9cb20c4a107a31b43b99073cac7952cfd2fed29ebfa08ccab025426a1f359a0b",
+      "preflight_response": "queen_attack.cpp\n```cpp\n#include \"queen_attack.h\"\n\n#include <sstream>\n#include <stdexcept>\n\nnamespace queen_attack\n{\n\nchess_board::chess_board(const std::pair<int, int>& white, const std::pair<int, int>& black)\n    : white_{white},\n    black_{black}\n{\n    if (white == black) {\n        throw std::domain_error(\"Both queens cannot occupy the same position.\");\n    }\n    if (white.first < 0 || white.second < 0 || black.first < 0 || black.second < 0) {\n        throw std::domain_error(\"Both queens must be placed on the board.\");\n    }\n    if (white.first > 7 || white.second > 7 || black.first > 7 || black.second > 7) {\n        throw std::domain_error(\"Both queens must be placed on the board.\");\n    }\n}\n\nchess_board::operator std::string() const\n{\n    std::ostringstream board;\n    for (int row = 0; row < 8; ++row) {\n        for (int col = 0; col < 8; ++col) {\n            const auto pos = std::make_pair(row, col);\n            if (pos == white_) {\n                board << 'W';\n            } else if (pos == black_) {\n                board << 'B';\n            } else {\n                board << '_';\n            }\n            if (col != 7) {\n                board << ' ';\n            }\n        }\n        board << '\\n';\n    }\n    return board.str();\n}\n\nbool chess_board::can_attack() const\n{\n    return (white_.first == black_.first)\n        || (white_.second == black_.second)\n        || ((white_.first - black_.first) == (white_.second - black_.second))\n        || ((white_.first - black_.first) == (black_.second - white_.second));\n}\n\n}\n```\n\nqueen_attack.h\n```cpp\n#if !defined(QUEEN_ATTACK_H)\n#define QUEEN_ATTACK_H\n\n#include <string>\n#include <utility>\n\nnamespace queen_attack\n{\n\nclass chess_board\n{\npublic:\n    chess_board(const std::pair<int, int>& white, const std::pair<int, int>& black);\n\n    chess_board()\n    {}\n\n    std::pair<int, int> white() const\n    {\n        return white_;\n    }\n    std::pair<int, int> black() const\n    {\n        return black_;\n    }\n\n    operator std::string() const;\n\n    bool can_attack() const;\n\nprivate:\n    const std::pair<int, int> white_ = std::make_pair(0, 3);\n    const std::pair<int, int> black_ = std::make_pair(7, 3);\n};\n\n}\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "space-age": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "numeric-conversion",
+      "fixture_dir": "multi_env_fixtures/space-age",
+      "lineage_id": "polyglot-cpp/space-age",
+      "manifest": "generalized_cpp_grpo_tasks/space-age.json",
+      "manifest_sha256": "62c93c70f35d9fd1e9c57f0663d28fbf4baa8262396a16e15e74150db0ce8c65",
+      "preflight_response": "space_age.cpp\n```cpp\n#include \"space_age.h\"\n\nnamespace space_age\n{\n\nnamespace\n{\nconst double earth_years_per_second = 1.0/31557600.0;\nconst double earth_years_per_mercury_year = 0.2408467;\nconst double earth_years_per_venus_year = 0.61519726;\nconst double earth_years_per_mars_year = 1.8808158;\nconst double earth_years_per_jupiter_year = 11.862615;\nconst double earth_years_per_saturn_year = 29.447498;\nconst double earth_years_per_uranus_year = 84.016846;\nconst double earth_years_per_neptune_year = 164.79132;\n}\n\nspace_age::space_age(unsigned long long secs)\n    : seconds_(secs)\n{\n}\n\nunsigned long long space_age::seconds() const\n{\n    return seconds_;\n}\n\ndouble space_age::on_earth() const\n{\n    return seconds_*earth_years_per_second;\n}\n\ndouble space_age::on_mercury() const\n{\n    return on_earth()/earth_years_per_mercury_year;\n}\n\ndouble space_age::on_venus() const\n{\n    return on_earth()/earth_years_per_venus_year;\n}\n\ndouble space_age::on_mars() const\n{\n    return on_earth()/earth_years_per_mars_year;\n}\n\ndouble space_age::on_jupiter() const\n{\n    return on_earth()/earth_years_per_jupiter_year;\n}\n\ndouble space_age::on_saturn() const\n{\n    return on_earth()/earth_years_per_saturn_year;\n}\n\ndouble space_age::on_uranus() const\n{\n    return on_earth()/earth_years_per_uranus_year;\n}\n\ndouble space_age::on_neptune() const\n{\n    return on_earth()/earth_years_per_neptune_year;\n}\n\n}\n```\n\nspace_age.h\n```cpp\n#if !defined(SPACE_AGE_H)\n#define SPACE_AGE_H\n\nnamespace space_age\n{\n\nclass space_age\n{\npublic:\n    explicit space_age(unsigned long long secs);\n\n    unsigned long long seconds() const;\n    double on_earth() const;\n    double on_mercury() const;\n    double on_venus() const;\n    double on_mars() const;\n    double on_jupiter() const;\n    double on_saturn() const;\n    double on_uranus() const;\n    double on_neptune() const;\n\nprivate:\n    unsigned long long seconds_;\n};\n\n}\n\n#endif\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "spiral-matrix": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "grid-algorithm",
+      "fixture_dir": "multi_env_fixtures/spiral-matrix",
+      "lineage_id": "polyglot-cpp/spiral-matrix",
+      "manifest": "generalized_cpp_grpo_tasks/spiral-matrix.json",
+      "manifest_sha256": "ce8f3e64b8cde9012dec6dccf47efe7a9d59f49992cdc08e4db2a21d56bca5ab",
+      "preflight_response": "spiral_matrix.cpp\n```cpp\n#include <tuple>\n\n#include \"spiral_matrix.h\"\n\nnamespace spiral_matrix {\n\nnamespace {\n\nusing Coords = std::tuple<int32_t, int32_t>;\nusing Dir = std::tuple<int32_t, int32_t>;\n\n[[nodiscard]] Coords operator+(Coords const coords, Dir const dir) {\n    auto const [row, col] = coords;\n    auto const [dr, dc] = dir;\n    return {row + dr, col + dc};\n}\n\n}  // namespace\n\nstd::vector<std::vector<uint32_t>> spiral_matrix(uint32_t const size) {\n    std::vector<std::vector<uint32_t>> matrix(size,\n                                              std::vector<uint32_t>(size));\n\n    constexpr auto rotate_clockwise = [](Dir const dir) {\n        auto const [dr, dc] = dir;\n        return Dir{dc, -dr};\n    };\n\n    auto const matrix_elem = [&matrix](Coords coords) -> auto& {\n        auto const [row, col] = coords;\n        return matrix[row][col];\n    };\n\n    auto const in_bounds = [size](Coords const coords) {\n        auto const [row, col] = coords;\n        return 0 <= row && row < static_cast<int32_t>(size) && 0 <= col &&\n               col < static_cast<int32_t>(size);\n    };\n\n    Coords coords{};\n    Dir dir{0, 1};\n    for (uint32_t i = 1; i <= size * size; ++i) {\n        matrix_elem(coords) = i;\n        if (!in_bounds(coords + dir) || matrix_elem(coords + dir) != 0) {\n            dir = rotate_clockwise(dir);\n        }\n        coords = coords + dir;\n    }\n\n    return matrix;\n}\n\n}  // namespace spiral_matrix\n```\n\nspiral_matrix.h\n```cpp\n#if !defined(SPIRAL_MATRIX_H)\n#define SPIRAL_MATRIX_H\n\n#include <cstdint>\n#include <vector>\n\nnamespace spiral_matrix {\n\n[[nodiscard]] std::vector<std::vector<uint32_t>> spiral_matrix(uint32_t size);\n\n}  // namespace spiral_matrix\n\n#endif  // SPIRAL_MATRIX_H\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "sublist": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "sequence-relation",
+      "fixture_dir": "multi_env_fixtures/sublist",
+      "lineage_id": "polyglot-cpp/sublist",
+      "manifest": "generalized_cpp_grpo_tasks/sublist.json",
+      "manifest_sha256": "0c5483d62cf348026c36ef0e46c2982f5298423c556afaabf7b7a3a432187527",
+      "preflight_response": "sublist.cpp\n```cpp\n#include \"sublist.h\"\n\n#include <algorithm>\n#include <iterator>\n\nnamespace sublist {\nbool is_sublist(const std::vector<int>& sublist,\n                const std::vector<int>& superlist) {\n    auto superlist_end = std::prev(\n        superlist.end(), std::max<std::size_t>(1, sublist.size()) - 1);\n    for (auto it{superlist.begin()}; it != superlist_end; std::advance(it, 1)) {\n        if (std::equal(sublist.begin(), sublist.end(), it)) return true;\n    }\n    return false;\n}\n\nList_comparison sublist(const std::vector<int>& list_one,\n                        const std::vector<int>& list_two) {\n    if (list_one == list_two) {\n        return List_comparison::equal;\n    }\n    if (list_one.size() < list_two.size() && is_sublist(list_one, list_two)) {\n        return List_comparison::sublist;\n    }\n    if (list_one.size() > list_two.size() && is_sublist(list_two, list_one)) {\n        return List_comparison::superlist;\n    }\n    return List_comparison::unequal;\n}\n}  // namespace sublist\n```\n\nsublist.h\n```cpp\n#pragma once\n\n#include <vector>\n\nnamespace sublist {\n    enum class List_comparison { equal, sublist, superlist, unequal };\n    \n    List_comparison sublist(const std::vector<int>& list_one, const std::vector<int>& list_two);\n}  // namespace sublist\n```\n",
+      "train": true,
+      "validation": false
+    },
+    "yacht": {
+      "admission_evidence": "phone-number-iter14-midband-v1",
+      "family": "combinatorial-scoring",
+      "fixture_dir": "multi_env_fixtures/yacht",
+      "lineage_id": "polyglot-cpp/yacht",
+      "manifest": "generalized_cpp_grpo_tasks/yacht.json",
+      "manifest_sha256": "6ddc078320a8b13baf2f41559babe4bfe55ec3e9254d013cad82e375d5dcff30",
+      "preflight_response": "yacht.cpp\n```cpp\n#include \"yacht.h\"\n\n#include <algorithm>\n#include <numeric>\n#include <stdexcept>\n\nnamespace yacht {\n\nint simple_scores(const std::array<int, 5>& dice, int target) {\n    return std::accumulate(\n        dice.begin(), dice.end(), 0,\n        [target](int acc, int i) { return i == target ? acc + i : acc; });\n}\n\nbool is_yacht(const std::array<int, 5>& dice) {\n    return std::all_of(dice.begin(), dice.end(),\n                       [&dice](int i) { return i == dice[0]; });\n}\n\nbool is_full_house(const std::array<int, 5>& dice) {\n    const int min{dice.at(0)};\n    const int max{dice.at(4)};\n    if (min == max) return false;\n    std::array<int, 5> full_house{min, min, max, max, max};\n    if (dice == full_house) return true;\n    full_house[2] = min;\n    return dice == full_house;\n}\n\nint four_of_a_kind_count(const std::array<int, 5>& dice) {\n    const int min{dice.at(0)};\n    const int max{dice.at(4)};\n    int count_min{};\n    int count_max{};\n    for (auto element : dice) {\n        if (element == min) ++count_min;\n        if (element == max) ++count_max;\n    }\n    if (count_min >= 4) return min * 4;\n    if (count_max >= 4) return max * 4;\n    return 0;\n}\n\nint score(std::array<int, 5> dice, const std::string& category) {\n    if (category == \"yacht\") {\n        return is_yacht(dice) ? 50 : 0;\n    }\n    if (category == \"ones\") {\n        return simple_scores(dice, 1);\n    }\n    if (category == \"twos\") {\n        return simple_scores(dice, 2);\n    }\n    if (category == \"threes\") {\n        return simple_scores(dice, 3);\n    }\n    if (category == \"fours\") {\n        return simple_scores(dice, 4);\n    }\n    if (category == \"fives\") {\n        return simple_scores(dice, 5);\n    }\n    if (category == \"sixes\") {\n        return simple_scores(dice, 6);\n    }\n    // the rest of the categories can make use of a sorted array:\n    std::sort(dice.begin(), dice.end());\n    if (category == \"four of a kind\") {\n        return four_of_a_kind_count(dice);\n    }\n    if (category == \"little straight\") {\n        std::array<int, 5> little_straight{1, 2, 3, 4, 5};\n        return dice == little_straight ? 30 : 0;\n    }\n    if (category == \"big straight\") {\n        std::array<int, 5> big_straight{2, 3, 4, 5, 6};\n        return dice == big_straight ? 30 : 0;\n    }\n    // the last two categories need the sum of the dice:\n    int total = std::reduce(dice.begin(), dice.end());\n    if (category == \"full house\") {\n        return is_full_house(dice) ? total : 0;\n    }\n    if (category == \"choice\") {\n        return total;\n    }\n    throw std::invalid_argument(\"unknown category: \" + category);\n}\n}  // namespace yacht\n```\n\nyacht.h\n```cpp\n#pragma once\n\n#include <array>\n#include <string>\n\nnamespace yacht {\nint score(std::array<int, 5> dice, const std::string& category);\n\n}  // namespace yacht\n```\n",
+      "train": true,
+      "validation": false
+    }
+  }
+}
