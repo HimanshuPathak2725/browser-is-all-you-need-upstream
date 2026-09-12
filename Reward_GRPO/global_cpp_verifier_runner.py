@@ -590,6 +590,8 @@ def _run_policy(prepared: Prepared, policy_id: str) -> dict[str, Any]:
         "stderr_captured_bytes": len(completed.stderr),
         "stdout_truncated": completed.stdout_bytes > len(completed.stdout),
         "stderr_truncated": completed.stderr_bytes > len(completed.stderr),
+        "stdout_tail": completed.stdout[-4096:].decode("utf-8", errors="replace"),
+        "stderr_tail": completed.stderr[-4096:].decode("utf-8", errors="replace"),
     }
     receipt_path = policy_output / "verification_receipt.json"
     if not receipt_path.is_file() or receipt_path.is_symlink():

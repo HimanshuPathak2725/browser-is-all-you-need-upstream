@@ -1078,6 +1078,17 @@ def _write_task_source(registry: TaskRegistry, output: Path) -> Path:
         docs = exercise / ".docs"
         docs.mkdir(parents=True)
         shutil.copy2(docs_source, docs / "instructions.md")
+        if task_id == "perfect-numbers":
+            # Answer-free interface information missing from the empty starter;
+            # pinned benchmark fixtures and tests remain unchanged.
+            with (docs / "instructions.md").open("a") as instructions:
+                instructions.write("\n\n## C++ interface contract\n\n"
+                    "Implement `perfect_numbers::classification classify(int n)` with "
+                    "`enum class classification { deficient, perfect, abundant };` "
+                    "in namespace `perfect_numbers`. Nonpositive inputs must throw "
+                    "`std::domain_error` from `<stdexcept>`. Classify positive signed-int "
+                    "inputs by the sum of their positive proper divisors (excluding "
+                    "the number itself), without arithmetic overflow.\n")
         shutil.copy2(cmake_source, exercise / "CMakeLists.txt")
         shutil.copy2(test_source, exercise / test_source.name)
         for relative in binding.manifest["candidate_files"]:

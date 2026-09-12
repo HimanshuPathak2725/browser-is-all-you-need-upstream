@@ -88,8 +88,8 @@
     "spiral-matrix": {
       "semantic": {
         "file": "spiral_matrix.cpp",
-        "find": "Dir dir{0, 1};",
-        "replace": "Dir dir{1, 0};"
+        "find": "matrix_elem(coords) = i;",
+        "replace": "matrix_elem(coords) = i + (i > 1 ? 1u : 0u);"
       }
     },
     "sublist": {

@@ -73,6 +73,10 @@ def run_checks(args, manifest):
 
     if candidate.get("status") == "BUILD_FAIL":
         build = candidate.get("build", {})
+        if build.get("status") not in {"CE-1", "CE-2", "LE"}:
+            reason = "candidate differential build encountered an infrastructure failure"
+            kernels.append(common.kernel(f"{POLICY_ID}-2", "invalid", reason, facts=facts))
+            return kernels, "invalid", reason
         # G02 already scores this exact build failure (this engine reuses
         # G02's build_candidate), so a second -1 here would double-count one
         # root cause.  Emit the candidate kernel as not_run (kernel null,
@@ -98,6 +102,7 @@ def run_checks(args, manifest):
         f"{POLICY_ID}-2", "pass" if candidate_ok else "fail",
         (f"candidate passes all {run.get('total_assertions')} assertions"
          if candidate_ok else
+         report.get("differential", "candidate runtime failure") if run.get("crashed") else
          f"candidate passes {run.get('passed_assertions')}/"
          f"{run.get('total_assertions')} assertions the reference passes"),
         facts=facts))

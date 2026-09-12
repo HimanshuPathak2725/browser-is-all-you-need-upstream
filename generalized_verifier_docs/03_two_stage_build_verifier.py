@@ -7,7 +7,7 @@ compile errors are separated from linker errors:
 
   Stage 1: compile <stem>.cpp alone          -> CE-1 on failure
   Stage 2: compile <stem>_test.cpp + tests-main.cpp, then link
-           -> CE-2 on compile failure, LE on 'undefined reference' at link
+           -> CE-2 on compile failure, LE on attributable candidate link errors
   PASS otherwise.
 
 No task names are hardcoded; everything derives from --fixture-dir and the
@@ -22,6 +22,7 @@ import argparse
 import glob
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -34,24 +35,75 @@ CXXFLAGS = ["-std=c++17", "-Wall", "-Wextra", "-Wpedantic", "-Werror",
 
 class BuildResult:
     def __init__(self, status, stage, feedback, stderr="", workspace=None,
-                 binary=None):
+                 binary=None, failure_kind=None, returncode=None):
         self.status = status        # PASS | CE-1 | CE-2 | LE | ERROR
         self.stage = stage
         self.feedback = feedback
         self.stderr = stderr
         self.workspace = workspace  # kept alive by caller when binary is set
         self.binary = binary
+        self.failure_kind = failure_kind
+        self.returncode = returncode
 
     def as_dict(self):
         return {"status": self.status, "stage": self.stage,
                 "feedback": self.feedback,
+                "failure_kind": self.failure_kind, "returncode": self.returncode,
                 "stderr_tail": "\n".join(self.stderr.splitlines()[-15:])}
 
 
-def _run(cmd, cwd):
-    proc = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE, text=True, timeout=300)
+class BuildInfrastructureError(RuntimeError):
+    def __init__(self, result):
+        self.result = result
+        super().__init__(result.feedback)
+
+
+_TOOL_FAILURE = re.compile(
+    r"^(?:[^:\n]*/)?(?:g\+\+|c\+\+|clang\+\+|cc1plus|collect2|ld(?:\.lld)?|as):"
+    r"[^\n]*(?:killed signal|internal compiler error|cannot execute|"
+    r"no space left on device|cannot find -l|permission denied|"
+    r"cannot open output file|file format not recognized)", re.I | re.M)
+
+
+def _run(cmd, cwd, stage):
+    try:
+        proc = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, text=True,
+                              encoding="utf-8", errors="replace", timeout=300)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        stderr = getattr(error, "stderr", "") or ""
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode("utf-8", errors="replace")
+        raise BuildInfrastructureError(BuildResult(
+            "ERROR", stage, f"compiler invocation failed: {error}", stderr,
+            cwd, failure_kind="compiler_timeout" if isinstance(error, subprocess.TimeoutExpired)
+            else "compiler_unavailable")) from error
+    if proc.returncode < 0 or _TOOL_FAILURE.search(proc.stderr):
+        raise BuildInfrastructureError(BuildResult(
+            "ERROR", stage, "compiler/toolchain failed; candidate attribution is unavailable",
+            proc.stderr, cwd, failure_kind="toolchain_failure", returncode=proc.returncode))
     return proc.returncode, proc.stderr
+
+
+def classify_link_failure(stderr):
+    """Keep unknown/tool failures invalid; recognize ordinary candidate errors."""
+    kinds, feedback = [], []
+    if re.search(r"multiple definition of|duplicate symbol", stderr, re.I):
+        kinds.append("duplicate_definition")
+        feedback.append("Duplicate definitions: keep each non-inline definition in one .cpp "
+                        "file, or make header-defined functions inline (or templates). "
+                        "An include guard does not prevent definitions in separate translation units.")
+    if re.search(r"undefined reference|undefined symbol|unresolved external symbol", stderr, re.I):
+        kinds.append("undefined_reference")
+        feedback.append("Missing definitions: define the declared symbol with its exact "
+                        "namespace and signature. Put template definitions in the header "
+                        "or explicitly instantiate the required types.")
+    if not kinds:
+        return "ERROR", "unclassified_link_failure", (
+            "Linker failed without a recognized candidate diagnostic; inspect the linker "
+            "output and toolchain before assigning a model reward.")
+    return "LE", kinds[0] if len(kinds) == 1 else "multiple_link_errors", (
+        "LINKER ERROR: " + " ".join(feedback))
 
 
 def _find_stem(fixture_dir):
@@ -90,6 +142,13 @@ def prepare_workspace(fixture_dir, header, source=None, workspace=None):
 def build_candidate(fixture_dir, header, source=None):
     """Two-stage build. Returns a BuildResult."""
     try:
+        return _build_candidate(fixture_dir, header, source)
+    except BuildInfrastructureError as error:
+        return error.result
+
+
+def _build_candidate(fixture_dir, header, source=None):
+    try:
         workspace = tempfile.mkdtemp(prefix="twostage-")
         workspace, stem = prepare_workspace(fixture_dir, header, source,
                                             workspace)
@@ -101,49 +160,43 @@ def build_candidate(fixture_dir, header, source=None):
 
     # ---- Stage 1: compile the candidate translation unit alone ----------
     rc, err = _run([CXX, *CXXFLAGS, "-I.", "-c", cpp, "-o", stem + ".o"],
-                   workspace)
+                   workspace, 1)
     if rc != 0:
         return BuildResult(
             "CE-1", 1,
             "COMPILE ERROR (stage 1): your implementation file fails to "
             "compile on its own. Fix the syntax/semantic errors in the "
-            "candidate source shown below.", err, workspace)
+            "candidate source shown below.", err, workspace,
+            failure_kind="candidate_compile", returncode=rc)
 
     # ---- Stage 2: compile the official test + harness, then link --------
     rc, err_test = _run([CXX, *CXXFLAGS, "-I.", "-c", test_cpp,
-                         "-o", stem + "_test.o"], workspace)
+                         "-o", stem + "_test.o"], workspace, 2)
     if rc != 0:
         return BuildResult(
             "CE-2", 2,
             "COMPILE ERROR (stage 2): the official test file does not "
             "compile against your header. The declarations in your header "
             "do not match the API the test uses (missing/wrong names, "
-            "private members, wrong template shape).", err_test, workspace)
+            "private members, wrong template shape).", err_test, workspace,
+            failure_kind="candidate_test_compile", returncode=rc)
 
     rc, err_main = _run([CXX, *CXXFLAGS, "-I.", "-c",
                          os.path.join("test", "tests-main.cpp"),
-                         "-o", "tests-main.o"], workspace)
+                         "-o", "tests-main.o"], workspace, 2)
     if rc != 0:
         return BuildResult("ERROR", 2,
                            "test harness (tests-main.cpp) failed to compile; "
                            "the task package itself is broken", err_main,
-                           workspace)
+                           workspace, failure_kind="harness_compile", returncode=rc)
 
     binary = os.path.join(workspace, stem + "_tests")
     rc, err_link = _run([CXX, stem + ".o", stem + "_test.o", "tests-main.o",
-                         "-o", binary, "-pthread"], workspace)
+                         "-o", binary, "-pthread"], workspace, 2)
     if rc != 0:
-        if "undefined reference" in err_link:
-            return BuildResult(
-                "LE", 2,
-                "LINKER ERROR: the test references symbols that have no "
-                "definition ('undefined reference'). Typical cause: functions "
-                "or template methods declared in the header but defined in "
-                "the .cpp file. Move the definitions into the header (or "
-                "explicitly instantiate templates).", err_link, workspace)
-        return BuildResult("ERROR", 2, "link failed without 'undefined "
-                                       "reference' diagnostics", err_link,
-                           workspace)
+        status, kind, feedback = classify_link_failure(err_link)
+        return BuildResult(status, 2, feedback, err_link, workspace,
+                           failure_kind=kind, returncode=rc)
 
     return BuildResult("PASS", 2, "build clean: candidate compiles and "
                                   "links against the official test",

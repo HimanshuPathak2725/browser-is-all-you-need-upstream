@@ -37,18 +37,25 @@ def run_checks(args, manifest):
     report = common.parse_engine_json(result, "two-stage build")
 
     build_status = report.get("status")
-    if build_status == "ERROR":
-        raise common.InvalidInput(
-            "two-stage build could not run: " + str(report.get("feedback")))
-
     facts_common = {
         "engine": ENGINE,
         "engine_exit_code": result["return_code"],
         "build_status": build_status,
+        "failure_kind": report.get("failure_kind"),
+        "returncode": report.get("returncode"),
         "feedback": report.get("feedback"),
         "stderr_tail": common.tail(report.get("stderr_tail", "")),
     }
     kernels = []
+    if build_status not in {"PASS", "CE-1", "CE-2", "LE"}:
+        reason = "two-stage build could not run: " + str(report.get("feedback"))
+        if report.get("stage") == 2:
+            kernels.append(common.kernel(f"{POLICY_ID}-1", "pass",
+                                         "stage 1: candidate translation unit compiles cleanly"))
+        kernels.append(common.kernel(f"{POLICY_ID}-{2 if kernels else 1}", "invalid",
+                                     reason, facts=facts_common, command=result["command"],
+                                     duration_seconds=result["duration_seconds"]))
+        return kernels, "invalid", reason
     if build_status == "CE-1":
         kernels.append(common.kernel(
             f"{POLICY_ID}-1", "fail",
@@ -67,7 +74,7 @@ def run_checks(args, manifest):
                 "stage 2: official test compiles and links against the "
                 "candidate", facts=facts_common))
         else:
-            kind = ("linker error (undefined reference)"
+            kind = ("linker error: " + str(report.get("failure_kind") or "candidate_link_failure")
                     if build_status == "LE"
                     else "test does not compile against the candidate header")
             kernels.append(common.kernel(
