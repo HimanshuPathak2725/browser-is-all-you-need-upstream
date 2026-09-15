@@ -1,16 +1,16 @@
-#include <cmath>
+#include <cstdint>
 #include <stdexcept>
 
 #include "perfect_numbers.h"
 
 using namespace std;
 
-constexpr int aliquot(const int n) {
+constexpr std::int64_t aliquot(const int n) {
     if (n == 1) {
         return 0;
     }
-    int acc = 1;
-    for (int i = 2; i <= sqrt(n); ++i) {
+    std::int64_t acc = 1;
+    for (int i = 2; i <= n / i; ++i) {
         if ((n % i) == 0) {
             acc += i;
             int complement = n / i;
@@ -27,7 +27,7 @@ classification classify(int n) {
     if (n <= 0) {
         throw std::domain_error("Input must be a positive integer");
     }
-    int aliq = aliquot(n);
+    std::int64_t aliq = aliquot(n);
     if (aliq < n) {
         return classification::deficient;
     }

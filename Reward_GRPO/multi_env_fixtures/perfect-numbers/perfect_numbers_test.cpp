@@ -1,4 +1,5 @@
 #include "perfect_numbers.h"
+#include <climits>
 #ifdef EXERCISM_TEST_SUITE
 #include <catch2/catch.hpp>
 #else
@@ -63,6 +64,30 @@ TEST_CASE("Zero is rejected (as it is not a positive integer)", "[72445cee-660c-
 
 TEST_CASE("Negative integer is rejected (as it is not a positive integer)", "[2d72ce2c-6802-49ac-8ece-c790ba3dae13]") {
 	REQUIRE_THROWS_AS(perfect_numbers::classify(-1),std::domain_error);
+}
+
+TEST_CASE("Abundant number with a large proper divisor sum is classified correctly") {
+	REQUIRE(perfect_numbers::classification::abundant == perfect_numbers::classify(2000000000));
+}
+
+TEST_CASE("Largest 32-bit signed integer is classified correctly") {
+	REQUIRE(perfect_numbers::classification::deficient == perfect_numbers::classify(2147483647));
+}
+
+TEST_CASE("Abundant square includes its square-root divisor") {
+	REQUIRE(perfect_numbers::classification::abundant == perfect_numbers::classify(196));
+}
+
+TEST_CASE("Documented abundant number 24 is classified correctly") {
+	REQUIRE(perfect_numbers::classification::abundant == perfect_numbers::classify(24));
+}
+
+TEST_CASE("Perfect number 496 is classified correctly") {
+	REQUIRE(perfect_numbers::classification::perfect == perfect_numbers::classify(496));
+}
+
+TEST_CASE("Minimum signed integer is rejected") {
+	REQUIRE_THROWS_AS(perfect_numbers::classify(INT_MIN), std::domain_error);
 }
 
 #endif
