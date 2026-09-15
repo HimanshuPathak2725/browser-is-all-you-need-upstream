@@ -312,9 +312,9 @@ def _candidate_semantic_fraction(receipt: Mapping[str, Any]) -> float | None:
 
     The binary verifier-kernel contract remains unchanged. Fractional shaping
     is projected only here, from the authenticated G03-2 facts, and only for a
-    candidate that actually ran against a healthy reference control. Counts
-    are treated as the source of truth; the engine's rounded score must agree
-    with them so malformed receipt facts cannot create reward.
+    candidate whose official test entry point completed against a healthy
+    reference control. Artifact binding does not authenticate candidate stdout:
+    counts provide failure shaping only, never evidence for a PASS.
     """
 
     results = receipt.get("policy_results", [])
@@ -346,7 +346,10 @@ def _candidate_semantic_fraction(receipt: Mapping[str, Any]) -> float | None:
             ):
                 return None
             run = candidate.get("run")
-            if not isinstance(run, Mapping) or run.get("crashed") is True:
+            if (not isinstance(run, Mapping) or run.get("crashed") is True
+                    or run.get("execution_completed") is not True
+                    or run.get("infrastructure_error") is True
+                    or run.get("timed_out") is True):
                 return None
             passed = run.get("passed_assertions")
             total = run.get("total_assertions")
@@ -364,9 +367,9 @@ def _candidate_semantic_fraction(receipt: Mapping[str, Any]) -> float | None:
                 or not math.isfinite(float(reported))
             ):
                 return None
-            fraction = passed / total
-            # The engine serializes its score rounded to four decimals.
-            if not math.isclose(float(reported), fraction, abs_tol=5e-5):
+            fraction = min(passed / total, math.nextafter(1.0, 0.0))
+            if not 0.0 <= reported < 1.0 or not math.isclose(
+                    float(reported), fraction, rel_tol=1e-12, abs_tol=1e-12):
                 return None
             return fraction
         return None

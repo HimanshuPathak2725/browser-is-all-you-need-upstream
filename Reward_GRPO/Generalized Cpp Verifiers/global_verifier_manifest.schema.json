@@ -25,13 +25,13 @@
     },
     "fixture_dir": {
       "type": "string",
-      "description": "Task fixture directory: exactly one <stem>_test.cpp, a test/ harness (tests-main.cpp, catch.hpp), and .meta/example.h with optional .meta/example.cpp. Required by wrappers G01, G02, G03, G06."
+      "description": "Task fixture directory: exactly one <stem>_test.cpp, a test/ harness (tests-main.cpp, catch.hpp), and .meta/example.h with optional .meta/example.cpp. Required by wrappers G01, G02, G03, G06, G07."
     },
     "policies": {
       "type": "object",
       "description": "Policy map keyed by policy id; presence of each requested policy key (G02..) is required by the runner. Entries are advisory command records.",
       "patternProperties": {
-        "^G0[1-6]$": {"type": "array"}
+        "^G0[1-7]$": {"type": "array"}
       },
       "additionalProperties": false
     },

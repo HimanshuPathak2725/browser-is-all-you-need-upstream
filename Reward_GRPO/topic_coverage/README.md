@@ -130,15 +130,26 @@ under `references/perfect-numbers`; it is never included in solver prompts.
 Reference and candidate JSON receipts contain commands, bounded logs, hashes,
 reference health, group decisions, repeatability and source-immutability checks.
 Failures include input/context, recent operation trace, expected/actual values
-and the failed requirement. Build failures are not counted as semantic kills.
+and the failed requirement. Candidate compile/link failures are not counted as semantic kills. Compiler
+signals/timeouts, recognized toolchain failures, and launcher failures invalidate
+the audit and retain diagnostics. Launcher errors use a separate close-on-exec
+pipe; a candidate exit code alone cannot impersonate an invocation failure.
+Runtime timeouts/signals remain candidate failures unless a recognized loader or
+resource-exhaustion diagnostic identifies an environment failure. An assertion
+failure preceding resource exhaustion remains attributable to the candidate.
 Reference failures invalidate the audit. No numerical GRPO reward is produced.
 
 Validate the committed task registry, probe inventory and fixed reward-family
 denominators without the separately staged trusted fixture bundle:
 
 ~~~sh
-PYTHONPATH=src:. python3 Reward_GRPO/topic_coverage/self_check.py
+PYTHONPATH=src:. python3 -B Reward_GRPO/topic_coverage/self_check.py
 ~~~
+
+This static self-check does not execute the C++ probes or validate externally
+staged fixtures. The repository README lists the separate execution and Python
+reliability checks. Receipt hashes authenticate artifacts and identity, not
+candidate-written stdout.
 
 ## Execution boundary
 

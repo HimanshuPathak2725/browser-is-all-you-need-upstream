@@ -381,25 +381,6 @@ def build_image():
     return {"image_id": image_identity(), "combined_reward_sha256": contract_digest()}
 
 
-def stage_launch(args):
-    output = args.out.resolve()
-    output.mkdir(parents=True, exist_ok=False)
-    copy_reward_code(output)
-    shutil.copytree(ROOT / "scripts", output / "scripts", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-    for name in ("src/sitecustomize.py", "pyproject.toml", "examples/grpo.sh",
-                 "Reward_GRPO/generalized_cpp_topic_grpo_skypilot.yaml"):
-        target = output / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(ROOT / name, target)
-    write_json(output / "launch-manifest.json", {
-        "schema_version": 1, "kind": CURRICULUM, "run_id": args.run_id,
-        "combined_reward_sha256": contract_digest(),
-        "files": {p.relative_to(output).as_posix(): base._sha256(p) for p in output.rglob("*") if p.is_file()},
-    })
-    from glm47_posttraining.integrations.charm_bridge_preflight import verify_package
-    return {"workdir": str(output), **verify_package(output)}
-
-
 def preflight(output=None, quick=False):
     from Reward_GRPO.topic_coverage.controls import controls
     registry = base._registry()
@@ -513,9 +494,6 @@ def main():
     check = sub.add_parser("preflight")
     check.add_argument("--output", type=Path)
     check.add_argument("--quick", action="store_true")
-    stage = sub.add_parser("stage-launch")
-    stage.add_argument("--out", type=Path, required=True)
-    stage.add_argument("--run-id", required=True)
     build = sub.add_parser("build-data")
     build.add_argument("--tasks-dir", required=True)
     build.add_argument("--out", type=Path, required=True)
@@ -536,7 +514,6 @@ def main():
         print(json.dumps(result, allow_nan=False))
         return
     result = (build_image() if args.command == "build-image" else
-              stage_launch(args) if args.command == "stage-launch" else
               build_data(args) if args.command == "build-data" else preflight(args.output, args.quick or os.environ.get("GENERALIZED_TOPIC_PREFLIGHT_QUICK") == "1"))
     print(json.dumps(result, indent=2))
 

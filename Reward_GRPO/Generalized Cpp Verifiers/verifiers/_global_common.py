@@ -169,17 +169,26 @@ def run_engine(engine_path, extra_args, timeout=ENGINE_TIMEOUT_SECONDS):
     }
 
 
-def parse_engine_json(engine_result, label):
-    """Parse an engine's ``--json`` stdout; exit code 2 means invalid."""
-    if engine_result["return_code"] == 2:
-        raise InvalidInput(
-            f"{label} reported a usage/IO error: "
-            f"{tail(engine_result['stderr'], 400)}")
+def parse_engine_json(engine_result, label, *, allow_invalid=False):
+    """Parse trusted engine JSON; only explicit callers consume INVALID reports.
+
+    Tool/usage failures retain both streams. Exit 2 can carry structured
+    infrastructure diagnostics for G02/G03; it can never carry a valid PASS.
+    """
+    code = engine_result["return_code"]
+    detail = (f"stdout={tail(engine_result['stdout'], 2000)}; "
+              f"stderr={tail(engine_result['stderr'], 2000)}")
+    if code not in {0, 1, 2} or (code == 2 and not allow_invalid):
+        raise InvalidInput(f"{label} engine failure (exit {code}): {detail}")
     try:
-        return json.loads(engine_result["stdout"])
+        report = json.loads(engine_result["stdout"])
     except json.JSONDecodeError as exc:
-        raise InvalidInput(
-            f"{label} did not emit a JSON report: {exc}") from exc
+        raise InvalidInput(f"{label} did not emit a JSON report: {exc}; {detail}") from exc
+    if not isinstance(report, dict):
+        raise InvalidInput(f"{label} JSON report must be an object; {detail}")
+    if code == 2 and report.get("status") != "ERROR" and report.get("verdict") != "INVALID":
+        raise InvalidInput(f"{label} invalid exit disagrees with report; {detail}")
+    return report
 
 
 def tail(text, limit=FACT_TEXT_LIMIT):

@@ -8,6 +8,7 @@ hostile-code containment. Callers must explicitly acknowledge local execution.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -30,6 +31,27 @@ PROBES = PACKAGE / "probes"
 FLAGS = ("-std=c++17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-pthread")
 MARKER = "TOPIC_COVERAGE_RECEIPT "
 MAX_SOURCE_BYTES = 1024 * 1024
+_BUILD_PATH = PACKAGE.parents[1] / "generalized_verifier_docs/03_two_stage_build_verifier.py"
+_BUILD_SPEC = importlib.util.spec_from_file_location("topic_build_classifier", _BUILD_PATH)
+_BUILD = importlib.util.module_from_spec(_BUILD_SPEC)
+_BUILD_SPEC.loader.exec_module(_BUILD)
+
+
+def build_failure(command: Mapping[str, Any]) -> tuple[str, str] | None:
+    if command.get("launch_error"):
+        return "invalid", "compiler_invocation_failure"
+    if command["timed_out"]:
+        return "invalid", "compiler_timeout"
+    kind = _BUILD.compiler_infrastructure_failure(command["returncode"], command["stderr_tail"])
+    if kind:
+        return "invalid", kind
+    if command["returncode"] != 0:
+        stderr = command["stderr_tail"]
+        if re.search(r"^(?:[^:\n]*/)?(?:ld(?:\.lld)?|collect2):", stderr, re.M):
+            status, kind, _ = _BUILD.classify_link_failure(stderr)
+            return ("invalid" if status == "ERROR" else "fail"), kind
+        return "fail", "candidate_compile"
+    return None
 
 
 def sha256(path: Path) -> str:
@@ -96,6 +118,14 @@ def parse_result(command: Mapping[str, Any], group: str) -> dict[str, Any]:
         return {"group": group, "status": "invalid", "reason": "process_launch_failed"}
     if command["timed_out"]:
         return {"group": group, "status": "fail", "reason": "runtime_timeout"}
+    if command["returncode"] != 0:
+        infrastructure = _BUILD.runtime_infrastructure_failure(
+            command["stdout_tail"] + "\n" + command.get("stderr_tail", ""))
+        if infrastructure:
+            return {"group": group, "status": "invalid", "reason": infrastructure}
+        if command["returncode"] is not None and command["returncode"] < 0:
+            return {"group": group, "status": "fail", "reason": "runtime_signal",
+                    "signal": -command["returncode"]}
     # Accept unrelated candidate stdout, but require exactly one complete protocol receipt.
     rows = [line[len(MARKER):] for line in command["stdout_tail"].splitlines()
             if line.startswith(MARKER)]
@@ -190,6 +220,7 @@ class AuditSession:
             if path.is_file() and path.suffix in {".py", ".cpp", ".hpp", ".h"}
             and "__pycache__" not in path.parts
         }
+        self.classifier_hash = sha256(_BUILD_PATH)
         self.reference: dict[str, Any] = {}
         self.version: dict[str, Any] = {}
 
@@ -220,11 +251,14 @@ class AuditSession:
         # Credentials and user-specific compiler/include overrides are not forwarded.
         environment = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C", "LC_ALL": "C",
                        "TMPDIR": str(self.work), "PYTHONDONTWRITEBYTECODE": "1"}
+        read_fd = write_fd = None
         try:
+            read_fd, write_fd = os.pipe2(os.O_CLOEXEC | os.O_NONBLOCK)
+            environment["TOPIC_LAUNCH_ERROR_FD"] = str(write_fd)
             with stdout_path.open("xb") as out, stderr_path.open("xb") as err:
                 proc = subprocess.Popen(
                     command, cwd=self.work, env=environment, stdin=subprocess.DEVNULL,
-                    stdout=out, stderr=err, start_new_session=True,
+                    stdout=out, stderr=err, start_new_session=True, pass_fds=(write_fd,),
                 )
                 try:
                     proc.wait(timeout=timeout)
@@ -238,7 +272,18 @@ class AuditSession:
                     proc.wait()
                 record["returncode"] = proc.returncode
         except OSError as error:
-            record["launch_error"] = type(error).__name__
+            record["launch_error"] = f"{type(error).__name__}: {error}"
+        finally:
+            if read_fd is not None:
+                try:
+                    detail = os.read(read_fd, 4096).decode("utf-8", errors="replace")
+                    if detail:
+                        record["launch_error"] = detail
+                except BlockingIOError:
+                    pass
+            for fd in (read_fd, write_fd):
+                if fd is not None:
+                    os.close(fd)
         record["elapsed_seconds"] = round(time.monotonic() - started, 6)
         for kind, path in (("stdout", stdout_path), ("stderr", stderr_path)):
             record[f"{kind}_path"] = str(path)
@@ -275,9 +320,11 @@ class AuditSession:
         )
         record: dict[str, Any] = {"build": build, "source_sha256": source_hashes(sources),
                                   "groups": [], "diagnostics": []}
-        if build["returncode"] != 0 or build["timed_out"]:
-            record.update(status="invalid" if build["timed_out"] or build.get("launch_error") else "fail",
-                          reason="build_timeout" if build["timed_out"] else "build_failure")
+        failure = build_failure(build)
+        if failure:
+            record.update(status=failure[0],
+                          reason="build_failure" if failure[0] == "fail" else failure[1],
+                          failure_kind=failure[1])
             return record
         for group in self.groups:
             repetitions = 1 if group in self.topic.diagnostics else self.repeats
@@ -311,6 +358,7 @@ class AuditSession:
             "changes_grpo_reward": False, "full_task_correctness_claim": False,
             "scope": asdict(self.topic), "registry_sha256": self.registry_hash,
             "manifest_sha256": self.binding.manifest_sha256, "pack_sha256": self.pack_hashes,
+            "execution_classifier_sha256": self.classifier_hash,
             "compiler": self.version, "reference_status": self.reference["status"],
             "reference_control": self.topic.reference_control or "pinned_fixture/.meta/example",
         }
@@ -318,6 +366,8 @@ class AuditSession:
             payload.update(status="invalid", reason="reference_control_failed")
         else:
             try:
+                if sha256(_BUILD_PATH) != self.classifier_hash:
+                    raise ValueError("execution classifier changed during audit")
                 if sha256(self.registry.path) != self.registry_hash:
                     raise ValueError("registry changed during audit")
                 self.registry.resolve(self.task_id)

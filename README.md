@@ -78,26 +78,64 @@ run-bound assets are intentionally excluded from this verifier-code review.
 | --- | --- | --- |
 | G01 | `01_structural_api_gate.py` | API symbols and declaration shape derived from the official test |
 | G02 | `03_two_stage_build_verifier.py` | Candidate compile, test compile, and attributable linker failures |
-| G03 | `04_differential_semantic_verifier.py` | Reference positive control and candidate assertion score |
+| G03 | `04_differential_semantic_verifier.py` | Healthy reference control, official test completion, and diagnostic assertion progress |
 | G04 | `05_response_integrity_verifier.py` | Empty, looping, or truncated model responses |
 | G05 | `06_candidate_boundary_verifier.py` | Whole-file parsing and editable-file boundaries |
 | G06 | `07_warning_hygiene_classifier.py` | Compiler diagnostic classes and repair guidance |
 | G07 | `08_safety_sanitizer_verifier.py` | ASan/UBSan findings without duplicating build or functional penalties |
 
-The Python CLIs use only the standard library. Build, semantic, and safety
-checks require a C++17 compiler (`g++` by default, or `$CXX`). Every engine
-supports `--json` and `--receipt DIR`; receipt mode records hashes of the
-verifier and its inputs. Run all positive and negative controls with:
+The standalone engines use Python's standard library. Their C++ checks need
+Linux, a C++17 compiler (`g++` by default, or `$CXX`), a GNU-compatible ELF
+linker supporting `--wrap=main`, and working ASan/UBSan runtimes. These machine
+prerequisites are separate from this verifier PR.
+
+G03 wraps the official test entry point and checks its return through a separate
+completion pipe, together with the process exit and a healthy reference control.
+An early exit or a printed Catch2 success summary alone cannot establish PASS.
+Assertion counts remain untrusted diagnostic/partial-credit data; failed scores
+are never rounded to full correctness. This completion check is not a security
+boundary against arbitrary native code in the same process. Hostile candidate
+execution still needs the worker/container isolation described below.
+
+Every engine supports `--json` and `--receipt DIR`. Receipt hashes bind artifacts
+and identity; they do not authenticate candidate-generated test summaries.
+Recognized compiler/tool and runtime environment failures produce INVALID with
+diagnostics. Candidate compile/link errors, runtime timeouts and crashes retain
+separate failure labels. A broken reference invalidates the differential result.
+
+There are three local validation layers:
 
 ```bash
-python3 generalized_verifier_docs/validation/self_check.py
+python3 -B generalized_verifier_docs/validation/self_check.py
+PYTHONPATH=src:. python3 -B Reward_GRPO/topic_coverage/self_check.py
+PYTHONPATH=src:. python3 -B -m pytest -q -p no:cacheprovider tests/test_generalized_cpp_reward_reliability.py
 ```
 
-Validate the targeted registry, reward-family denominators, and probe inventory:
+The first runs small synthetic positive/negative controls through G01–G07 and
+checks receipts. It does not validate all benchmark tasks or the staged fixture
+bundle. The second checks the eleven topic definitions, probe inventory and
+fixed reward-family denominators; it does not compile or execute those probes.
+The reliability suite runs synthetic C++ cases and mocked worker/tool failures,
+including cancellation, retries, evidence retention, G03 completion, and G07
+schema/runtime agreement. It does not require Docker or launch training.
+
+Reliability tests require Python 3.10+, the repository's Python dependencies
+(including `pydantic`), `pytest>=8` and `jsonschema>=4.18`. In an isolated Python
+environment, install them with:
 
 ```bash
-PYTHONPATH=src:. python3 Reward_GRPO/topic_coverage/self_check.py
+python3 -m pip install . 'pytest>=8' 'jsonschema>=4.18'
+PYTHONPATH=src:. python3 -B -m pytest -q -p no:cacheprovider tests
+python3 -m compileall src tests
 ```
+
+Full fixture verification and combined-reward preflight additionally require the
+externally staged registry, manifests, admission records and fixture bundle,
+with matching digests, plus the verifier Docker environment. Local synthetic
+checks do not establish that these external assets are available or compatible.
+The combined CLI offers worker, image build, data preparation and preflight
+commands. Launch staging is deferred; this PR does not supply training launch
+or CHARM assets.
 
 Each engine also provides `--help` with its task-independent input contract.
 

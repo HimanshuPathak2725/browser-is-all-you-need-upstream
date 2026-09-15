@@ -4,8 +4,8 @@
 Runs the differential semantic engine against the manifest's ``fixture_dir``:
 the fixture's reference implementation (``.meta/example.h`` / optional
 ``.meta/example.cpp``) is built and run as a positive control, then the
-candidate is built and scored assertion-by-assertion against the same
-official test.  Emits one kernel for the reference control and one for the
+candidate is built against the same official test. PASS requires a witnessed
+return from official main and a healthy exit; printed counts are diagnostics.  Emits one kernel for the reference control and one for the
 candidate differential score; when the candidate does not build, the
 candidate kernel is ``not_run`` (kernel null) because G02 already scores
 that build failure.
@@ -46,10 +46,12 @@ def run_checks(args, manifest):
                         common.candidate_path(args.candidate_dir, sources[0])]
     engine_args.append("--json")
     result = common.run_engine(common.find_engine(ENGINE), engine_args)
-    report = common.parse_engine_json(result, "differential semantic")
+    report = common.parse_engine_json(result, "differential semantic", allow_invalid=True)
 
     reference = report.get("reference", {})
     candidate = report.get("candidate", {})
+    if not isinstance(reference, dict) or not isinstance(candidate, dict):
+        raise common.InvalidInput("differential reference/candidate reports must be objects")
     facts = {
         "engine": ENGINE,
         "engine_exit_code": result["return_code"],
@@ -64,7 +66,7 @@ def run_checks(args, manifest):
     kernels = []
     ref_ok = reference.get("status") == "OK"
     kernels.append(common.kernel(
-        f"{POLICY_ID}-1", "pass" if ref_ok else "fail",
+        f"{POLICY_ID}-1", "pass" if ref_ok else "invalid",
         ("reference control: fixture reference implementation passes 100% "
          "of official assertions" if ref_ok else
          f"reference control failed: {reference.get('status')}"),
@@ -96,8 +98,25 @@ def run_checks(args, manifest):
             "by G02, so the differential candidate kernel was not run")
 
     run = candidate.get("run", {})
+    if not isinstance(run, dict):
+        raise common.InvalidInput("differential runtime report must be an object")
+    if (not ref_ok or report.get("verdict") == "INVALID"
+            or run.get("infrastructure_error") is True):
+        reason = "reference or execution infrastructure failed; differential is invalid"
+        kernels.append(common.kernel(f"{POLICY_ID}-2", "invalid", reason, facts=facts))
+        return kernels, "invalid", reason
+    if (candidate.get("status") != "RAN" or report.get("verdict") not in {"PASS", "FAIL"}
+            or result["return_code"] != (0 if report["verdict"] == "PASS" else 1)
+            or type(run.get("verified_pass")) is not bool
+            or type(run.get("execution_completed")) is not bool):
+        reason = "malformed or inconsistent differential engine result"
+        kernels.append(common.kernel(f"{POLICY_ID}-2", "invalid", reason, facts=facts))
+        return kernels, "invalid", reason
     score = run.get("score")
-    candidate_ok = score == 1.0
+    candidate_ok = (report["verdict"] == "PASS" and run["verified_pass"]
+                    and run["execution_completed"] and run.get("harness_returncode") == 0
+                    and run.get("returncode") == 0 and not run.get("crashed")
+                    and not run.get("timed_out"))
     kernels.append(common.kernel(
         f"{POLICY_ID}-2", "pass" if candidate_ok else "fail",
         (f"candidate passes all {run.get('total_assertions')} assertions"
