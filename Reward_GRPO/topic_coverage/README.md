@@ -134,9 +134,10 @@ and the failed requirement. Candidate compile/link failures are not counted as s
 signals/timeouts, recognized toolchain failures, and launcher failures invalidate
 the audit and retain diagnostics. Launcher errors use a separate close-on-exec
 pipe; a candidate exit code alone cannot impersonate an invocation failure.
-Runtime timeouts/signals remain candidate failures unless a recognized loader or
-resource-exhaustion diagnostic identifies an environment failure. An assertion
-failure preceding resource exhaustion remains attributable to the candidate.
+Runtime timeouts/signals and completed candidate failures remain candidate failures.
+Runtime INVALID requires OS/launcher evidence from the execution layer. Candidate
+stdout/stderr phrases, including loader and resource-exhaustion text, cannot
+establish that evidence; they remain in command logs and runtime diagnostics.
 Reference failures invalidate the audit. No numerical GRPO reward is produced.
 
 Validate the committed task registry, probe inventory and fixed reward-family

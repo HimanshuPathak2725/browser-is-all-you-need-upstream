@@ -114,18 +114,19 @@ def response_from_sources(sources: Mapping[str, str]) -> str:
 
 
 def parse_result(command: Mapping[str, Any], group: str) -> dict[str, Any]:
-    if command.get("launch_error"):
-        return {"group": group, "status": "invalid", "reason": "process_launch_failed"}
+    # The execution layer owns launch_error (OS/close-on-exec error pipe).
+    # Candidate stdout/stderr and exit codes cannot manufacture that evidence.
+    output = command["stdout_tail"] + "\n" + command.get("stderr_tail", "")
+    infrastructure = _BUILD.runtime_infrastructure_failure(
+        output, launch_error=command.get("launch_error"))
+    if infrastructure:
+        return {"group": group, "status": "invalid", "reason": "process_launch_failed",
+                "infrastructure_kind": infrastructure}
     if command["timed_out"]:
         return {"group": group, "status": "fail", "reason": "runtime_timeout"}
-    if command["returncode"] != 0:
-        infrastructure = _BUILD.runtime_infrastructure_failure(
-            command["stdout_tail"] + "\n" + command.get("stderr_tail", ""))
-        if infrastructure:
-            return {"group": group, "status": "invalid", "reason": infrastructure}
-        if command["returncode"] is not None and command["returncode"] < 0:
-            return {"group": group, "status": "fail", "reason": "runtime_signal",
-                    "signal": -command["returncode"]}
+    if command["returncode"] is not None and command["returncode"] < 0:
+        return {"group": group, "status": "fail", "reason": "runtime_signal",
+                "signal": -command["returncode"]}
     # Accept unrelated candidate stdout, but require exactly one complete protocol receipt.
     rows = [line[len(MARKER):] for line in command["stdout_tail"].splitlines()
             if line.startswith(MARKER)]
@@ -291,6 +292,8 @@ class AuditSession:
             record[f"{kind}_tail"] = (
                 path.read_bytes()[-24000:].decode("utf-8", errors="replace") if path.exists() else ""
             )
+        record["runtime_diagnostic"] = _BUILD.runtime_failure_diagnostic(
+            record["stdout_tail"] + "\n" + record["stderr_tail"])
         return record
 
     def _execute(self, sources: Mapping[str, str], label: str) -> dict[str, Any]:

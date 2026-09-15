@@ -99,9 +99,17 @@ execution still needs the worker/container isolation described below.
 
 Every engine supports `--json` and `--receipt DIR`. Receipt hashes bind artifacts
 and identity; they do not authenticate candidate-generated test summaries.
-Recognized compiler/tool and runtime environment failures produce INVALID with
-diagnostics. Candidate compile/link errors, runtime timeouts and crashes retain
-separate failure labels. A broken reference invalidates the differential result.
+Compiler/tool invocation failures and runtime launch failures produce INVALID
+with diagnostics. Runtime INVALID requires OS/launcher evidence; candidate-written
+loader or resource-error phrases remain diagnostics and cannot override completed
+failures, crashes, timeouts, or early exits. A broken reference invalidates the
+differential result. Candidate compile/link failures remain separately attributed.
+
+On a G03 timeout, the verifier kills the process group, drains output for at most
+250 ms, then closes the read pipe and allows at most 250 ms to reap the direct
+child. Receipts retain collected output and flags for drain/reap deadline expiry.
+An escaped descendant holding stdout/stderr cannot make cleanup wait for EOF
+indefinitely; containing escaped processes still requires worker isolation.
 
 There are three local validation layers:
 
@@ -116,8 +124,9 @@ checks receipts. It does not validate all benchmark tasks or the staged fixture
 bundle. The second checks the eleven topic definitions, probe inventory and
 fixed reward-family denominators; it does not compile or execute those probes.
 The reliability suite runs synthetic C++ cases and mocked worker/tool failures,
-including cancellation, retries, evidence retention, G03 completion, and G07
-schema/runtime agreement. It does not require Docker or launch training.
+including cancellation, retries, evidence retention, G03 completion, exact-count
+forgery through wrapper/receipt/aggregation/reward, runtime-text precedence, bounded
+descendant-held pipe cleanup, and G07 schema/runtime agreement. It does not require Docker or launch training.
 
 Reliability tests require Python 3.10+, the repository's Python dependencies
 (including `pydantic`), `pytest>=8` and `jsonschema>=4.18`. In an isolated Python

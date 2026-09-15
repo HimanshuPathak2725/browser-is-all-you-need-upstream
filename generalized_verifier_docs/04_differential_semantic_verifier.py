@@ -38,6 +38,10 @@ _twostage = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_twostage)
 build_candidate = _twostage.build_candidate
 
+# Separate, bounded cleanup budgets; neither extends candidate execution time.
+POST_KILL_DRAIN_SECONDS = 0.25
+POST_KILL_REAP_SECONDS = 0.25
+
 
 # ---------------------------------------------------------------------------
 # Catch2 output parsing
@@ -54,6 +58,9 @@ class TestRun:
         self.infrastructure_error = infrastructure_error
         self.execution_completed = False
         self.harness_returncode = None
+        self.runtime_diagnostic = None
+        self.output_drain_timed_out = False
+        self.cleanup_timed_out = False
 
     @property
     def verified_pass(self):
@@ -67,13 +74,15 @@ class TestRun:
         if self.verified_pass:
             return 1.0
         if (not self.execution_completed or self.crashed or self.infrastructure_error
-                or self.returncode < 0 or not self.total or self.passed == self.total):
+                or self.timed_out or self.returncode is None or self.returncode < 0
+                or not self.total or self.passed == self.total):
             return 0.0
         # Counts are untrusted diagnostics. Even float conversion of very large
         # counts must not promote a failed execution to a full score.
         return min(self.passed / self.total, math.nextafter(1.0, 0.0))
 
     def as_dict(self):
+        signaled = self.returncode is not None and self.returncode < 0
         return {"passed_assertions": self.passed,
                 "total_assertions": self.total,
                 "score": self.score,
@@ -81,6 +90,9 @@ class TestRun:
                 "execution_completed": self.execution_completed,
                 "harness_returncode": self.harness_returncode,
                 "infrastructure_error": bool(self.infrastructure_error),
+                "runtime_diagnostic": self.runtime_diagnostic,
+                "output_drain_timed_out": self.output_drain_timed_out,
+                "cleanup_timed_out": self.cleanup_timed_out,
                 "failed_test_cases": self.failed_cases,
                 "crashed": self.crashed,
                 "returncode": self.returncode,
@@ -88,11 +100,11 @@ class TestRun:
                 "timeout_seconds": self.timeout_seconds,
                 "failure_kind": (self.infrastructure_error or
                                  ("runtime_timeout" if self.timed_out else
-                                  "signal" if self.returncode < 0 else
+                                  "signal" if signaled else
                                   "incomplete_test_execution" if not self.execution_completed else
                                   "incomplete_test_output" if self.crashed else
                                   "assertion_failure" if not self.verified_pass else None)),
-                "signal": -self.returncode if self.returncode < 0 and not self.timed_out
+                "signal": -self.returncode if signaled and not self.timed_out
                           and not self.infrastructure_error else None,
                 "raw_tail": self.raw_tail[-4000:]}
 
@@ -144,9 +156,23 @@ def _parse_catch2_output(output, returncode):
                    "\n".join(output.splitlines()[-10:]), crashed=True)
 
 
+def _kill_process_group(proc):
+    try:
+        os.killpg(proc.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+
+
+def _timeout_output(error):
+    # TimeoutExpired.output is bytes even when Popen is in text mode. A second
+    # communicate timeout includes all output collected so far, not a new chunk.
+    output = error.output or ""
+    return output.decode("utf-8", errors="replace") if isinstance(output, bytes) else output
+
+
 def run_test_binary(binary, timeout=120, *, completion_token=None):
     read_fd = write_fd = None
-    proc = None
+    proc = run = None
     try:
         read_fd, write_fd = os.pipe2(os.O_CLOEXEC | os.O_NONBLOCK)
         environment = dict(os.environ, G03_COMPLETION_FD=str(write_fd))
@@ -156,41 +182,61 @@ def run_test_binary(binary, timeout=120, *, completion_token=None):
                                 pass_fds=(write_fd,), start_new_session=True)
         try:
             output, _ = proc.communicate(timeout=timeout)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
+            _kill_process_group(proc)
+            output = _timeout_output(error)
+            drain_timed_out = False
             try:
-                os.killpg(proc.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            output, _ = proc.communicate()
-            return TestRun(proc.returncode, 0, 0, [], output[-4000:], crashed=True,
-                           timed_out=True, timeout_seconds=timeout)
-        run = parse_catch2_output(output, proc.returncode)
-        if proc.returncode != 0:
-            run.infrastructure_error = _twostage.runtime_infrastructure_failure(output)
-        try:
-            completion = os.read(read_fd, 4096).decode("ascii")
-        except (BlockingIOError, UnicodeError):
-            completion = ""
-        if completion_token:
-            match = re.fullmatch(re.escape(completion_token) + r":(-?\d+)\n", completion)
-            if match:
-                run.harness_returncode = int(match.group(1))
-                run.execution_completed = (proc.returncode >= 0 and
-                                           run.harness_returncode % 256 == proc.returncode)
-        return run
+                output, _ = proc.communicate(timeout=POST_KILL_DRAIN_SECONDS)
+            except subprocess.TimeoutExpired as drain_error:
+                drain_timed_out = True
+                if drain_error.output is not None:
+                    output = _timeout_output(drain_error)
+                # An escaped descendant may hold the pipe open. Stop waiting
+                # for EOF; the finally block closes our read end and boundedly
+                # reaps the direct child without changing timeout attribution.
+            run = TestRun(proc.poll(), 0, 0, [], output[-4000:], crashed=True,
+                          timed_out=True, timeout_seconds=timeout)
+            run.output_drain_timed_out = drain_timed_out
+        else:
+            run = parse_catch2_output(output, proc.returncode)
+            try:
+                completion = os.read(read_fd, 4096).decode("ascii")
+            except (BlockingIOError, UnicodeError):
+                completion = ""
+            if completion_token:
+                match = re.fullmatch(re.escape(completion_token) + r":(-?\d+)\n", completion)
+                if match:
+                    run.harness_returncode = int(match.group(1))
+                    run.execution_completed = (proc.returncode >= 0 and
+                                               run.harness_returncode % 256 == proc.returncode)
+            # Completion/process status precedes candidate-generated text.
+            # No launch failure was reported by Popen; text alone cannot turn
+            # even an incomplete/early-exit candidate into INVALID.
+            run.infrastructure_error = _twostage.runtime_infrastructure_failure(
+                output, execution_completed=run.execution_completed)
+        run.runtime_diagnostic = _twostage.runtime_failure_diagnostic(output)
     except OSError as error:
-        return TestRun(-1, 0, 0, [], str(error), crashed=True,
-                       infrastructure_error="runtime_launch_failure")
+        run = TestRun(-1, 0, 0, [], str(error), crashed=True,
+                      infrastructure_error=_twostage.runtime_infrastructure_failure(
+                          str(error), launch_error=error))
+        run.runtime_diagnostic = _twostage.runtime_failure_diagnostic(str(error))
     finally:
         if proc is not None:
+            _kill_process_group(proc)
+            if proc.stdout is not None:
+                proc.stdout.close()
             try:
-                os.killpg(proc.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            proc.wait()
+                proc.wait(timeout=POST_KILL_REAP_SECONDS)
+            except subprocess.TimeoutExpired:
+                if run is not None:
+                    run.cleanup_timed_out = True
+            if run is not None and run.returncode is None:
+                run.returncode = proc.returncode
         for fd in (read_fd, write_fd):
             if fd is not None:
                 os.close(fd)
+    return run
 
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,9 @@
 """Regressions for the September 10 GRPO verifier abort and lost evidence."""
 import asyncio
+import errno
+import os
+import signal
+import sys
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import importlib.util
@@ -296,7 +300,8 @@ def semantic_fixture(tiny_build):
 
 
 @pytest.mark.parametrize('kind', ['good', 'wrong', 'forged_exit_zero', 'forged_exit_one',
-                                  'forged_return', 'crash', 'compile', 'link'])
+                                  'forged_exit_exact', 'forged_return', 'loader_exit', 'resource_crash',
+                                  'crash', 'compile', 'link'])
 def test_g03_real_execution_requires_official_completion(semantic, semantic_fixture, kind):
     root = semantic_fixture
     bodies = {
@@ -306,7 +311,13 @@ def test_g03_real_execution_requires_official_completion(semantic, semantic_fixt
                             'std::fflush(stdout); std::_Exit(0);',
         'forged_exit_one': 'std::puts("All tests passed (999 assertions in 1 test case)"); '
                            'std::fflush(stdout); std::_Exit(1);',
+        'forged_exit_exact': 'std::puts("All tests passed (2 assertions in 1 test case)"); '
+                             'std::fflush(stdout); std::_Exit(0);',
         'forged_return': 'std::puts("All tests passed (999 assertions in 1 test case)"); return 8;',
+        'loader_exit': 'std::fputs("probe: error while loading shared libraries: missing.so\\n", stderr); '
+                       'std::fflush(stderr); std::_Exit(127);',
+        'resource_crash': 'std::fputs("std::system_error: Resource temporarily unavailable\\n", stderr); '
+                          'std::fflush(stderr); std::raise(SIGABRT); return 8;',
         'crash': 'std::raise(SIGSEGV); return 8;',
         'compile': 'this is not C++;',
     }
@@ -324,6 +335,11 @@ def test_g03_real_execution_requires_official_completion(semantic, semantic_fixt
         assert run['verified_pass'] is (kind == 'good')
         if kind.startswith('forged_exit'):
             assert not run['execution_completed'] and run['score'] == 0
+        if kind in {'loader_exit', 'resource_crash'}:
+            assert not run['execution_completed'] and not run['infrastructure_error']
+            assert run['score'] == 0
+        if kind == 'forged_exit_exact':
+            assert run['total_assertions'] == report['reference']['run']['total_assertions'] == 2
         if kind == 'crash':
             assert run['failure_kind'] == 'signal' and run['signal'] == 11
     if kind != 'good':
@@ -344,6 +360,13 @@ def test_failed_fraction_never_rounds_to_full_score(semantic, total):
             'reference': {'status': 'OK'}, 'candidate': {'status': 'RAN', 'run': encoded}}}]}]}
     assert 0 < base._candidate_semantic_fraction(receipt) < 1
     assert base.receipt_to_reward(receipt)[0] <= 0
+    for flag, invalid_value in [('execution_completed', False), ('infrastructure_error', True),
+                                ('timed_out', True), ('crashed', True)]:
+        saved = encoded[flag]
+        encoded[flag] = invalid_value
+        assert base._candidate_semantic_fraction(receipt) is None
+        assert base.receipt_to_reward(receipt)[0] <= 0
+        encoded[flag] = saved
     encoded['score'] = 1.0
     assert base._candidate_semantic_fraction(receipt) is None
 
@@ -457,9 +480,9 @@ def test_topic_build_attribution(code, stderr, timed_out, launch, expected):
 
 @pytest.mark.parametrize('output,code,timed_out,status,reason', [
     ("terminate called after throwing an instance of 'std::system_error'\n"
-     'what(): Resource temporarily unavailable', -6, False, 'invalid', 'runtime_resource_exhaustion'),
+     'what(): Resource temporarily unavailable', -6, False, 'fail', 'runtime_signal'),
     ('probe: error while loading shared libraries: libc.so: unavailable', 127, False,
-     'invalid', 'runtime_loader_failure'),
+     'fail', 'probe_protocol_failure'),
     ("FAILED: assertion\nstd::system_error Resource temporarily unavailable", -6, False,
      'fail', 'runtime_signal'),
     ('', -11, False, 'fail', 'runtime_signal'),
@@ -513,6 +536,11 @@ def test_full_g07_manifest_accepted_by_schema_validator_and_runner(tmp_path):
         assert list(Draft7Validator(schema).iter_errors(invalid))
         with pytest.raises(validator.ManifestValidationError):
             validator.validate_manifest(invalid)
+        path.write_text(json.dumps(invalid))
+        with pytest.raises(runner.RunnerError, match='manifest validation failed'):
+            runner._prepare(SimpleNamespace(candidate_dir=candidate, manifest=path,
+                reward_root=pack.parent, expected_manifest_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                profile='full'), tmp_path/'invalid-output')
 
 
 def test_stage_launch_is_not_exposed(monkeypatch, capsys):
@@ -527,6 +555,9 @@ def test_stage_launch_is_not_exposed(monkeypatch, capsys):
     with pytest.raises(SystemExit) as exit:
         reward.main()
     assert exit.value.code == 2
+    source = Path(reward.__file__).read_text()
+    assert 'generalized_cpp_topic_grpo_skypilot.yaml' not in source
+    assert 'charm_bridge_preflight' not in source
 
 
 @pytest.mark.parametrize('forged', [False, True])
@@ -586,3 +617,136 @@ def test_g02_standalone_cleans_successful_build_workspace(engine, tiny_build, tm
         'PASS', 2, 'built', workspace=str(workspace)))
     assert engine.run(SimpleNamespace(fixture_dir=str(tiny_build), header='', source=None, json=True)) == 0
     assert not workspace.exists()
+
+
+@pytest.mark.parametrize('diagnostic', [
+    'std::system_error: Resource temporarily unavailable',
+    'probe: error while loading shared libraries: missing.so: unavailable',
+])
+@pytest.mark.parametrize('stream', ['stdout', 'stderr'])
+def test_completed_topic_failure_outranks_candidate_text(tmp_path, diagnostic, stream):
+    from Reward_GRPO.topic_coverage.runner import AuditSession, aggregate_group, parse_result
+    session = AuditSession.__new__(AuditSession)
+    session.work = tmp_path
+    receipt = dict(protocol='topic-coverage-v1', group='group', status='fail', checks=2,
+                   requirement='wrong value', expected=7, actual=8)
+    script = ('import sys\n'
+              f'print({diagnostic!r}, file=sys.{stream})\n'
+              f'print({("TOPIC_COVERAGE_RECEIPT " + json.dumps(receipt))!r})\n'
+              'raise SystemExit(1)\n')
+    command = session._command([sys.executable, '-c', script], tmp_path/'logs', 'candidate', 5)
+    assert command['returncode'] == 1 and not command.get('launch_error')
+    assert diagnostic in command[f'{stream}_tail']
+    assert command['runtime_diagnostic'] in {'runtime_loader_failure', 'runtime_resource_exhaustion'}
+    result = parse_result(command, 'group')
+    assert result['status'] == 'fail' and result['requirement'] == 'wrong value'
+    assert aggregate_group('group', [result, result])['status'] == 'fail'
+
+
+def test_g03_authoritative_resource_launch_failure_is_invalid(semantic, monkeypatch):
+    def unavailable(*args, **kwargs):
+        raise BlockingIOError(errno.EAGAIN, 'Resource temporarily unavailable')
+    monkeypatch.setattr(semantic.subprocess, 'Popen', unavailable)
+    run = semantic.run_test_binary('/candidate')
+    assert run.infrastructure_error == 'runtime_resource_exhaustion' and not run.execution_completed
+    assert not run.verified_pass and run.score == 0
+    assert 'Resource temporarily unavailable' in run.raw_tail
+
+
+def test_g03_timeout_with_descendant_held_pipe_is_bounded(semantic, semantic_fixture, tmp_path):
+    """A supervisor deadline makes unbounded communicate fail, not hang pytest."""
+    root = semantic_fixture
+    pid_file = tmp_path / 'detached.pid'
+    (root / 'tiny.cpp').write_text(
+        '#include <cstdio>\n#include <unistd.h>\nint value(){\n'
+        'if (fork() == 0) { setsid();\n'
+        f'FILE* pid_file=std::fopen({json.dumps(str(pid_file))}, "w");\n'
+        'if (!pid_file) _exit(90);\n'
+        'std::fprintf(pid_file, "%ld", static_cast<long>(getpid())); std::fclose(pid_file);\n'
+        'std::puts("descendant retains stdout/stderr"); std::fflush(stdout);\n'
+        'sleep(30); _exit(0); }\n'
+        'for (;;) { pause(); } return 7; }\n')
+    build = semantic.build_candidate(str(root), str(root/'tiny.h'), str(root/'tiny.cpp'),
+                                     authenticate_main=True)
+    try:
+        assert build.status == 'PASS', build.as_dict()
+        script = '''import importlib.util, json, sys, time
+spec = importlib.util.spec_from_file_location('drain_test', sys.argv[1])
+engine = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(engine)
+started = time.monotonic()
+run = engine.run_test_binary(sys.argv[2], timeout=.2, completion_token=sys.argv[3])
+print(json.dumps({'elapsed': time.monotonic() - started, 'run': run.as_dict()}))
+'''
+        # This fails within five seconds even if production draining regresses.
+        proc = subprocess.run([sys.executable, '-B', '-c', script, semantic.__file__,
+                               build.binary, build.completion_token],
+                              capture_output=True, text=True, timeout=5)
+        assert proc.returncode == 0, proc.stderr
+        result = json.loads(proc.stdout)
+        run = result['run']
+        assert result['elapsed'] < 2.0, result
+        assert run['timed_out'] and run['failure_kind'] == 'runtime_timeout'
+        assert run['returncode'] == -signal.SIGKILL
+        assert not run['infrastructure_error'] and not run['verified_pass'] and run['score'] == 0
+        assert run['output_drain_timed_out'] and not run['cleanup_timed_out']
+        assert 'descendant retains stdout/stderr' in run['raw_tail']
+        assert pid_file.is_file()
+        os.kill(int(pid_file.read_text()), 0)  # EOF is still held when the handler returns.
+        print(f"bounded timeout: {result['elapsed']:.3f}s; assertion <2.0s; supervisor 5.0s")
+    finally:
+        if pid_file.exists():
+            try:
+                os.kill(int(pid_file.read_text()), signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        if build.workspace:
+            shutil.rmtree(build.workspace)
+
+
+@pytest.mark.parametrize('kind', ['good', 'forged_exact', 'forged_nonexact', 'loader_failure',
+                                  'resource_failure'])
+def test_g03_full_receipt_aggregation_reward_path(semantic_fixture, tmp_path, kind):
+    from Reward_GRPO import generalized_cpp_grpo as base
+    from Reward_GRPO import global_cpp_verifier_runner as runner
+    root = semantic_fixture
+    if kind.startswith('forged'):
+        count = 2 if kind == 'forged_exact' else 1000000
+        (root/'tiny.cpp').write_text('#include <cstdio>\n#include <cstdlib>\nint value(){'
+            f'std::puts("All tests passed ({count} assertions in 1 test case)"); '
+            'std::fflush(stdout); std::_Exit(0);}')
+    elif kind.endswith('failure'):
+        text = ('probe: error while loading shared libraries: missing.so' if kind == 'loader_failure'
+                else 'std::system_error: Resource temporarily unavailable')
+        (root/'tiny.cpp').write_text('#include <cstdio>\nint value(){'
+                                    f'std::puts({json.dumps(text)}); return 8;}}')
+    manifest = dict(schema_version=1, task_id='synthetic-check', fixture_dir=str(root),
+        candidate_files=['tiny.h', 'tiny.cpp'], policies={f'G{i:02d}': [] for i in range(1, 6)},
+        response_text='\n\n'.join(f'{name}\n```cpp\n{(root/name).read_text()}\n```'
+                                    for name in ['tiny.h', 'tiny.cpp']))
+    path, output = tmp_path/'manifest.json', tmp_path/'aggregate'
+    path.write_text(json.dumps(manifest))
+    code = runner.main(['--candidate-dir', str(root), '--manifest', str(path),
+        '--expected-manifest-sha256', hashlib.sha256(path.read_bytes()).hexdigest(),
+        '--output-dir', str(output), '--reward-root', str(reward.ROOT/'Reward_GRPO'),
+        '--profile', 'live'])
+    receipt = json.loads((output/runner.AGGREGATE_RECEIPT).read_text())
+    assert code == (0 if kind == 'good' else 1), receipt
+    assert receipt['executed_policies'] == ['G01', 'G02', 'G03', 'G04', 'G05']
+    policy = next(p for p in receipt['policy_results'] if p['policy_id'] == 'G03')
+    facts = next(k for k in policy['kernels'] if k['kernel_id'] == 'G03-2')['facts']
+    run = facts['candidate']['run']
+    assert facts['engine_exit_code'] == (0 if kind == 'good' else 1)
+    if kind == 'forged_exact':
+        assert run['total_assertions'] == facts['reference']['run']['total_assertions'] == 2
+    if kind.startswith('forged'):
+        assert not run['execution_completed'] and not run['verified_pass']
+    if kind.endswith('failure'):
+        assert run['execution_completed'] and run['score'] == .5
+        assert base._candidate_semantic_fraction(receipt) == .5
+        assert text in run['raw_tail']
+        assert run['runtime_diagnostic'] in {'runtime_loader_failure', 'runtime_resource_exhaustion'}
+    value, infrastructure, _ = base.receipt_to_reward(receipt)
+    assert not infrastructure
+    assert receipt['status'] == ('pass' if kind == 'good' else 'fail')
+    assert (value == 1) if kind == 'good' else (value <= 0)

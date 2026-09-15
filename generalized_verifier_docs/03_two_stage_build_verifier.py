@@ -76,18 +76,28 @@ def compiler_infrastructure_failure(returncode, stderr):
     return None
 
 
-def runtime_infrastructure_failure(output):
-    """Recognize loader/resource failures, not arbitrary candidate exceptions.
-
-    Assertions preceding resource exhaustion remain candidate failures, as in
-    the repository's test-stage attribution convention.
-    """
+def runtime_failure_diagnostic(output):
+    """Recognize useful runtime text without treating it as execution evidence."""
     if re.search(r"^\S+: error while loading shared libraries:", output, re.M):
         return "runtime_loader_failure"
-    if ("std::system_error" in output and "Resource temporarily unavailable" in output
-            and not re.search(r"FAILED|\b[1-9]\d* failed\b", output)):
+    if "Resource temporarily unavailable" in output:
         return "runtime_resource_exhaustion"
     return None
+
+
+def runtime_infrastructure_failure(output, *, launch_error=None, execution_completed=False):
+    """Attribute runtime infrastructure failure only with launch-layer evidence.
+
+    Precedence: witnessed completion wins over textual diagnostics; otherwise
+    an OS invocation error or the launcher's close-on-exec error channel is
+    required for INVALID. Candidate output, including loader/resource phrases
+    and early exits, can never supply that evidence. Text may refine an already
+    established launch failure and is retained separately for diagnostics.
+    """
+    if execution_completed or not launch_error:
+        return None
+    return (runtime_failure_diagnostic(str(launch_error))
+            or runtime_failure_diagnostic(output) or "runtime_launch_failure")
 
 
 def _run(cmd, cwd, stage):
