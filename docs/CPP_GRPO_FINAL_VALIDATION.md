@@ -13,6 +13,10 @@ The source integration was validated at `c4129bcd5e9d87a53ec3aff25954a04c8302efe
 and ported as `7c9ab51b1eb5e7bf53706e770967136d270f4f48`.
 All 319 reward files were verified byte-identical across that port. Packaging,
 CLI integration and evidence documentation do not change the reward digest.
+The artifact-durability follow-up is `48343f965d24c6e12ddeb515dd7fdd427c61a50a`.
+It checks server size/MD5 and object generations with bounded deadlines before
+reporting successful preservation. Its tests use a fake transport; no cloud
+training artifact upload has been claimed or performed.
 
 ## Frozen identities
 
@@ -39,8 +43,8 @@ image and complete machine receipts remain external artifacts pending publicatio
 | Topic structure self-check | 11 topics, 64 groups, 39 families |
 | Shared reliability and enum regression run | 103 passed |
 | Final C++ implementation suite | 168 passed |
-| Combined Wootzapp/C++ suite | 229 passed, 1 optional Harbor test skipped |
-| Optional Harbor test with declared browser extra | Passed separately; all 230 tests exercised |
+| Final combined suite (`--extra dev --extra browser`) | 240 passed in 175.63 seconds; none skipped |
+| Artifact-durability regressions | 10 passed within the combined suite |
 | Reference/control Docker campaign | 153/153 expected outcomes |
 | Selected reference executions | 14/14; full reward; no infrastructure failure |
 | Missing-compiler Docker controls | 14/14 INVALID with zero reward |
