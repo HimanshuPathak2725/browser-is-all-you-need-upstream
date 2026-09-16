@@ -574,9 +574,11 @@ def test_g03_real_engine_wrapper_reward_path(semantic_fixture, forged):
         {'fixture_dir': str(root), 'candidate_files': ['tiny.h', 'tiny.cpp']})
     receipt = {'status': status, 'policy_results': [{'policy_id': 'G03', 'kernels': kernels}]}
     value, infrastructure, _ = base.receipt_to_reward(receipt)
-    assert not infrastructure
     assert status == ('fail' if forged else 'pass')
-    assert (value <= 0) if forged else (value == 1)
+    # This isolated wrapper is not a complete aggregate and cannot establish
+    # full reward. The full-runner test below covers the genuine PASS path.
+    assert value <= 0
+    assert infrastructure == (not forged)
 
 
 def test_g02_real_missing_tool_diagnostics_survive_wrapper(semantic_fixture, monkeypatch):
@@ -750,3 +752,86 @@ def test_g03_full_receipt_aggregation_reward_path(semantic_fixture, tmp_path, ki
     assert not infrastructure
     assert receipt['status'] == ('pass' if kind == 'good' else 'fail')
     assert (value == 1) if kind == 'good' else (value <= 0)
+    if kind == 'good':
+        import copy
+        for defect in ('missing_policy', 'broken_reference', 'malformed_kernels', 'missing_kernel_status'):
+            malformed = copy.deepcopy(receipt)
+            if defect == 'missing_policy':
+                malformed['policy_results'] = [policy]
+            elif defect == 'malformed_kernels':
+                malformed['policy_results'][0]['kernels'] = None
+            elif defect == 'missing_kernel_status':
+                malformed['policy_results'][0]['kernels'][0].pop('status')
+            else:
+                semantic = next(p for p in malformed['policy_results'] if p['policy_id'] == 'G03')
+                semantic['kernels'][-1]['facts']['reference']['run']['verified_pass'] = False
+            assert base.receipt_to_reward(malformed) == (0.0, True, 'verifier_invalid')
+
+
+@pytest.mark.parametrize('kind', ['good', 'failed', 'incomplete', 'infrastructure'])
+def test_reward_rechecks_aggregate_pass_against_execution(semantic_fixture, kind):
+    from Reward_GRPO import generalized_cpp_grpo as base
+    root = semantic_fixture
+    if kind == 'failed':
+        (root/'tiny.cpp').write_text('int value(){return 8;}')
+    elif kind == 'incomplete':
+        (root/'tiny.cpp').write_text('#include <cstdlib>\nint value(){std::_Exit(0);}')
+    from Reward_GRPO import global_cpp_verifier_runner as runner
+    manifest = dict(schema_version=1, task_id='synthetic-check', fixture_dir=str(root),
+        candidate_files=['tiny.h', 'tiny.cpp'], policies={f'G{i:02d}': [] for i in range(1, 6)},
+        response_text='\n\n'.join(f'{name}\n```cpp\n{(root/name).read_text()}\n```'
+                                    for name in ['tiny.h', 'tiny.cpp']))
+    path, output = root.parent/'auth-manifest.json', root.parent/'auth-aggregate'
+    path.write_text(json.dumps(manifest))
+    runner.main(['--candidate-dir', str(root), '--manifest', str(path),
+        '--expected-manifest-sha256', hashlib.sha256(path.read_bytes()).hexdigest(),
+        '--output-dir', str(output), '--reward-root', str(reward.ROOT/'Reward_GRPO'),
+        '--profile', 'live'])
+    receipt = json.loads((output/runner.AGGREGATE_RECEIPT).read_text())
+    if kind == 'infrastructure':
+        policy = next(p for p in receipt['policy_results'] if p['policy_id'] == 'G03')
+        policy['kernels'][-1]['facts']['candidate']['run']['infrastructure_error'] = True
+    # Derived labels cannot override the runner's underlying execution facts.
+    receipt.update(status='pass', score=1.0)
+    score, infrastructure, reason = base.receipt_to_reward(receipt)
+    assert infrastructure == (kind == 'infrastructure')
+    assert (score == 1.0) == (kind == 'good')
+    if kind in {'failed', 'incomplete'}:
+        assert reason == 'fail' and score <= 0
+
+
+def test_aggregate_pass_without_execution_is_invalid():
+    from Reward_GRPO import generalized_cpp_grpo as base
+    assert base.receipt_to_reward({'status': 'pass', 'score': 1.0}) == (
+        0.0, True, 'verifier_invalid')
+
+
+@pytest.mark.parametrize('return_code', [1, 2])
+def test_reward_rejects_runner_failure_with_success_receipt(semantic_fixture, tmp_path, monkeypatch, return_code):
+    from Reward_GRPO import generalized_cpp_grpo as base
+    from Reward_GRPO import global_cpp_verifier_runner as runner
+    root = semantic_fixture
+    manifest = dict(schema_version=1, task_id='synthetic-check', fixture_dir='fixture',
+        candidate_files=['tiny.h', 'tiny.cpp'], policies={f'G{i:02d}': [] for i in range(1, 6)},
+        protected_files={str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+                         for path in root.rglob('*') if path.is_file()
+                         and path.name not in {'tiny.h', 'tiny.cpp'}})
+    manifest_path = tmp_path/'binding-manifest.json'
+    manifest_path.write_text(json.dumps(manifest))
+    registry_path = tmp_path/'registry.json'
+    registry_path.write_text(json.dumps(dict(schema_version=1, tasks={'synthetic-check': dict(
+        manifest='binding-manifest.json', fixture_dir='fixture',
+        manifest_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest())})))
+    registry = base.TaskRegistry(registry_path)
+    original = runner.run
+    def inconsistent(args):
+        assert original(args) == 0
+        return return_code
+    monkeypatch.setattr(runner, 'run', inconsistent)
+    response = base._render_whole_file_response({name: (root/name).read_text()
+                                               for name in ['tiny.h', 'tiny.cpp']})
+    record = base.score_sample({'metadata': {'problem_id': 'synthetic-check'},
+                                'response': response}, registry)
+    assert record['infrastructure_error'] is True
+    assert record['reason'] == 'runner_protocol_error'
+    assert record['score'] == 0
