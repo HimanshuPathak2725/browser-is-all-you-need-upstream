@@ -1,0 +1,320 @@
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_21a315af670510570023e8b709839065\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_95a78ae24f153595c53e45e5f788fba4\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_1e0c0fefcab1b980ef1141da680d7a39\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_f2d09eb74da2d2d6dce70e894be35c8c\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_fc3c54fd6596c971132f12f786b56c75\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_f2597d245645615033f6d2735385c2de\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_9dbf7d992c9bd576a43111562f55f85b\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_220083ae07f18b87f551fecfb5f043f3\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_044ecf3d0c3ec0b7d942382ef64a0fee\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_45d4c1071c12f49b289ff1ccf46a6246\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_8ae5aae28da209aeb4937a3e6dc2f6b9\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_798782417608aabd68b97b7fbe803c80\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_542af8a3e9b9a7e06ce3eaa0fb3463b6\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_72b088a8ca373febe457848ec123e284\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: stop_before_start_throws did not throw std::runtime_error\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_90591cc4ff40158b140ea24a6660c785\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_9a3a8af35fb97f82e3bfcabd5db7cf7d\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_9269d2c8bdfa060923931f31e35b6042\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_e0f3b3eb5dbe6a63ddbef12af9f3bf5b\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_dd4474b18ea3af173ed3406cc73cc869\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_d91ea8b4f66596c6e6fbf487f978c905\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_6b2fde83dc7672d75d851173e311393a\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_14afa5d76f6199466422910b14247044\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_1232f98ac1fa828d56ca46068f385122\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_7ed9bd25de748fd24f9caebf361bc792\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_337930ee5fbfba4536f89c8bb37c5522\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_e2c83a9fe655e115b6ed131d9ea38e29\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_70c0c20d73c842dae0cda3acd86da04c\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_c04adca74b104f3ecce7bc46adad1e21\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_ee4660e0ad965c94eab21a433f6193c6\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: value_after_stop_throws did not throw std::runtime_error\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_4d32ee2142c3b422c1f549af2b744c37\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_f4bf2a202d8f4bcdee28eaffe3e31cb6\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_e507bbf3810a05d023b85053bde8126f\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_87d6212d9702224f0f80e94b0ee2831e\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: value_after_stop_throws did not throw std::runtime_error\nFAILED: credit_after_stop_throws did not throw std::runtime_error\nFAILED: credit_before_start_throws did not throw std::runtime_error\nFAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_0f88a2a2629cecc9beee75c33075c397\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_5c8b99cbb7945d40aab001411af7ac9b\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_7dccfefb7be850d4a27ff499ea4ffe18\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_9d6632e0551385761010a1f10704a269\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_e0a3ba44bd282eb9a3fdfd2c70fd96bc\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_f2c04286ce6fd16062d8d0d88cc6319c\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::runtime_error'\n  what():  Token box is active\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: credit_after_stop_throws did not throw std::runtime_error\nFAILED: credit_before_start_throws did not throw std::runtime_error\nFAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::runtime_error'\n  what():  Token box is already active\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_cdaf00fff500dc1173d3318fa5840273\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_183297356c42abe9257ccb8c5c93f4d2\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_374c5533b28691e5f9c3c86ba1e23236\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: value_after_stop_throws did not throw std::runtime_error\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_a3f8f7eb6a662372af693cb2f1bff589\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_ca840144739b7ae694d0c0b6b68ef711\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_66229b26f96caf01c151d7c5f6cb9a2e\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_21ba742304fd3e50b628b3faf71d896f\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": ""}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_e7fd89d0bd6cd7a1a68b7061a1caee31\n"}}
+{"all_tests_pass": true, "compile_error": false, "format_valid": true, "logs": {"test": "All tests passed (19 assertions in 19 test cases)\nGLM47_AIDER_PASS_fd3b94913a1e6738a00d76d38986bbec\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nVerification failed after 19 assertions\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "FAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "FAILED: value_after_stop_throws did not throw std::runtime_error\nFAILED: credit_after_stop_throws did not throw std::runtime_error\nFAILED: credit_before_start_throws did not throw std::runtime_error\nFAILED: debit_after_stop_throws did not throw std::runtime_error\nFAILED: restart_resets_zero\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": true, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}
+{"all_tests_pass": false, "compile_error": true, "format_valid": true, "logs": {"test": ""}}
+{"all_tests_pass": false, "compile_error": false, "format_valid": false, "logs": {"test": "terminate called after throwing an instance of 'std::system_error'\n  what():  Resource temporarily unavailable\ntimeout: the monitored command dumped core\n"}}

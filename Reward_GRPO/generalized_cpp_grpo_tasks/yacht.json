@@ -1,0 +1,32 @@
+{
+  "candidate_files": [
+    "yacht.cpp",
+    "yacht.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/yacht",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.md": "6c648bd61b3584393de929b14ab5b63fac6773144feffa2230e634b13566a343",
+    ".docs/introduction.md": "5d7e5867f42c965d628f509fab96d25a0556200bf063f0f28c23e99af8c951b8",
+    ".meta/config.json": "64c9e0dec441e9cc09dbe8912cb583d6515273574fdeec18d9ad2b09a50a0a05",
+    ".meta/example.cpp": "cc0d3453a566c22e032f1109b7baeac8aeadb0782732f4cc3a5a1116de10b701",
+    ".meta/example.h": "2f238335f96a7c7ff20602e7254ff6470c79d2e7b34aa9b6e361912970e8c344",
+    ".meta/tests.toml": "4aa5d3069ae31aac11de1f1bf2f3942e8d3e703ee5654fb46f756b6a4b2b517e",
+    "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260",
+    "yacht.cpp": "1c1e220edc4c54f4a47305144e98a67a4afd0c92cee9291abf1531408bc6773e",
+    "yacht.h": "9dd2b28a5efd65ecac214dc5d3461a475ec1153df5d87d7bc72bb701d117d111",
+    "yacht_test.cpp": "45af93cc50b53cddf26115d4bbf0c03e3e61939b4c7979d0eb670f8937bbacbb"
+  },
+  "schema_version": 1,
+  "source": "official:Aider-AI/polyglot-benchmark@7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f/cpp/exercises/practice/yacht",
+  "task_id": "yacht"
+}

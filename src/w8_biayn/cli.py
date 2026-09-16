@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -1162,6 +1163,24 @@ def harbor_oracle_smoke(
             "reward": outcome.reward_doc,
         }
     )
+
+
+@app.command(
+    "cpp-grpo",
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
+    add_help_option=False,
+)
+def cpp_grpo(ctx: typer.Context):
+    """Run the gated C++ cohort launcher; defaults to dry-run. Pass --help for its options."""
+    launcher = Path(__file__).resolve().parents[2] / "scripts" / "launch_cpp_grpo_final.py"
+    if not launcher.is_file():
+        raise typer.BadParameter(
+            "C++ launch assets are unavailable; run from the source checkout after uv sync --extra grpo-launch."
+        )
+    try:
+        run_command([sys.executable, str(launcher), *ctx.args])
+    except subprocess.CalledProcessError as error:
+        raise typer.Exit(error.returncode) from error
 
 
 @app.command()

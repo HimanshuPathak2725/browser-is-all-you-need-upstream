@@ -9,6 +9,8 @@ description = "Command and control CLI for BrowserGym RL pipelines on rLLM, SkyR
 requires-python = ">=3.10"
 dependencies = [
     "google-auth[requests]>=2.29",
+    "huggingface-hub>=0.34",
+    "wandb>=0.17",
     "pydantic>=2.7",
     "PyYAML>=6.0",
     "rich>=13.7",
@@ -24,6 +26,9 @@ browser = [
 ]
 dev = [
     "pytest>=8.0",
+    "ruff>=0.6",
+    "torch>=2.4",
+    "jsonschema>=4",
 ]
 domdiff = [
     "aiohttp>=3.9",
@@ -32,15 +37,25 @@ domdiff = [
     "websocket-client>=1.7",
 ]
 
+grpo-launch = ["PyYAML>=6", "google-auth[requests]>=2", "requests>=2", "skypilot[gcp]>=0.11"]
+
 [project.scripts]
 w8-biayn = "w8_biayn.cli:app"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/w8_biayn"]
+packages = ["src/w8_biayn", "src/glm47_posttraining"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 
 [tool.ruff]
 line-length = 100
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }

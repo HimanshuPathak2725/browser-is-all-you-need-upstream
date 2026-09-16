@@ -386,3 +386,39 @@ Run before handoff:
 uv run --extra dev pytest
 uv run python -m compileall src tests
 ```
+
+## Versioned generalized C++ GRPO cohort
+
+The final cohort combines the September verifier reliability lineage with the
+maintained task repairs. See [the cohort and validation guide](Reward_GRPO/task_repairs/final_cohort.md)
+and [the machine-readable version](Reward_GRPO/cohorts/cpp-grpo-final-v1.json).
+Ten tasks are selected for training and four separate tasks for validation.
+Grade School and D&D Character are held; three saturated tasks are excluded.
+Historical evaluation and archived replay remain distinct from new model results.
+
+```mermaid
+flowchart LR
+    A[Pinned task assets] --> B[Authenticated cohort]
+    V[Verifier completion and reward checks] --> B
+    B --> C[Reference and control campaign]
+    C --> D[Immutable evaluator image]
+    C --> E[Versioned HF training dataset]
+    D --> F[Gated GRPO launch]
+    E --> F
+    F --> G[Matched baseline and checkpoint evaluation]
+    G --> H[Per-task results and INVALID counts]
+```
+
+Fresh local validation uses `uv sync --extra dev` followed by
+`PYTHONPATH=src:. uv run --extra dev pytest`.
+Cloud launch dependencies are available through `uv sync --extra grpo-launch`;
+the C++ command `uv run --extra grpo-launch w8-biayn cpp-grpo --help` exposes the
+gated launcher, which defaults to dry-run and diagnoses missing credentials/tools.
+Use `w8-biayn status`, `logs` and `down` with the launch receipt's cluster and credentials.
+Generated datasets, receipts, logs, image archives and checkpoints belong outside
+the source worktree. The evaluator image is exported after validation and loaded
+unchanged on the trainer.
+
+Operational guides: [gated launch](Reward_GRPO/task_repairs/final_launch.md) and
+[matched evaluation](docs/CPP_GRPO_FINAL_EVALUATION.md). The launch snapshot includes
+`src/sitecustomize.py` so fresh Ray/Python workers honor `GLM47_REGISTER_BRIDGE`.

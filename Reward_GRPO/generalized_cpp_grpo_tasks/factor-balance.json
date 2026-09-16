@@ -1,0 +1,29 @@
+{
+  "candidate_files": [
+    "factor_balance.cpp",
+    "factor_balance.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/factor-balance",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.md": "e6bef27283debaa8cf388f21f75c3155d3d5c1a44b7543563ad6ca3362afc9d1",
+    ".meta/example.cpp": "6cc22dbd00ff6bb4ff67766517ebcac709352562d22d8dd5a58c2c1c4ad05811",
+    ".meta/example.h": "58c7c27f78bda6138e2307f2ecb2b05ae02227756d3b912c740f501891d27a22",
+    "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",
+    "factor_balance.cpp": "c2eb2d799819584b57cf1f241d3a93d113343d9eb905194c03739a484a6d1288",
+    "factor_balance.h": "58c7c27f78bda6138e2307f2ecb2b05ae02227756d3b912c740f501891d27a22",
+    "factor_balance_test.cpp": "f5971713fa74e3f2d34ce24cc579938656b464f1c5ba31594a96aa54f791bcdc",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260"
+  },
+  "schema_version": 1,
+  "source": "repository:Reward_GRPO/multi_env_fixtures/factor-balance",
+  "task_id": "factor-balance"
+}

@@ -155,3 +155,24 @@ uv run w8-biayn domdiff push-image --source-image android-world-domdiff:local --
 uv run w8-biayn launch r3 --with-local-domdiff --benchmark webvoyager-domdiff-heldout --dry-run
 uv run w8-biayn launch r3 --with-local-domdiff --benchmark harbor-domdiff-browser-swe --dry-run
 ```
+
+## Generalized C++ GRPO cohort
+
+The separate C++ task pipeline uses the existing Miles/GLM runtime; BrowserGym and
+Harbor continue using their existing SkyRL commands. Read
+[the frozen cohort guide](../../../Reward_GRPO/task_repairs/final_cohort.md) and
+[the gated launch guide](../../../Reward_GRPO/task_repairs/final_launch.md).
+
+Install `uv sync --extra grpo-launch` and invoke `w8-biayn cpp-grpo --help`.
+This command delegates to the existing C++ launcher without changing its options
+or gates. Default execution stages a dry-run; only explicit `--launch` can request
+resources. Require the complete reference/control preflight, exact cohort and
+verifier hashes, immutable dataset revision, pinned evaluator image, identities
+and scoped project IAM before launch. Use the existing `w8-biayn status`, `logs`
+and `down` commands with the recorded cluster and service-account file.
+
+Keep all generated data, image exports, model outputs and receipts outside the
+source worktree. Preserve the frozen task/reward hashes when changing packaging
+or CLI integration; revalidate them before reusing prior preflight evidence.
+Historical candidate replay is not a new model evaluation. Never weaken task
+contracts or accept infrastructure-invalid outputs to meet a target score.
