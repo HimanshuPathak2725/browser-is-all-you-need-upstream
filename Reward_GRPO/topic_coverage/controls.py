@@ -313,6 +313,31 @@ def alternative(task: str, sources: dict[str, str]) -> dict[str, str]:
     raise ValueError("unsupported topic")
 
 
+def sublist_enum_controls(sources: dict[str, str]) -> list[Control]:
+    """Accept distinct representations and reject aliased relation names."""
+    enum = "enum class List_comparison { equal, sublist, superlist, unequal };"
+    header = "sublist.h"
+    distinct = "enum class List_comparison { equal = 19, sublist = -7, superlist = 42, unequal = 101 };"
+    collapsed = "enum class List_comparison { equal = 0, sublist = 0, superlist = 0, unequal = 0 };"
+    aliased = "enum class List_comparison { equal = 0, sublist = 1, superlist = 1, unequal = 2 };"
+    constant_source = '''#include "sublist.h"
+namespace sublist {
+List_comparison sublist(const std::vector<int>&, const std::vector<int>&) {
+    return List_comparison::equal;
+}
+}
+'''
+    positive = edit(sources, header, enum, distinct)
+    constant = edit(sources, header, enum, collapsed)
+    constant["sublist.cpp"] = constant_source
+    partial = edit(positive, header, distinct, aliased)
+    return [Control("nonstandard_enum_values", positive, "pass", "positive"),
+            Control("collapsed_enum_constant", constant, "fail", "semantic",
+                    "equal_relation"),
+            Control("partially_aliased_enum", partial, "fail", "semantic",
+                    "equal_relation")]
+
+
 def controls(task: str, sources: dict[str, str]) -> list[Control]:
     result = [Control("alternative", alternative(task, sources), "pass", "positive")]
     def mutation(name: str, file: str, old: str, new: str, group: str) -> None:
@@ -391,6 +416,7 @@ def controls(task: str, sources: dict[str, str]) -> list[Control]:
         mutation("wrong_mars_period", "space_age.cpp", "= 1.8808158;", "= 1.9808158;",
                  "conversion_boundaries")
     elif task == "sublist":
+        result.extend(sublist_enum_controls(sources))
         mutation("empty_is_equal", "sublist.cpp", "if (list_one == list_two) {",
                  "if (list_one.empty() || list_two.empty() || list_one == list_two) {", "empty_lists")
         mutation("call_order_changes_result", "sublist.cpp", "if (list_one == list_two) {",

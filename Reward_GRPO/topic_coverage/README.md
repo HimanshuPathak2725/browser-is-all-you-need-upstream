@@ -98,6 +98,9 @@ overlap cases and repeatability have separate verdicts. Repeatability checks
 call stability, swap consistency and input immutability without repeating the
 semantic oracle. Receipts use symbolic relation names. Additional lengths 31, 129
 and 513 use disjoint large/negative values and repeated prefixes with late mismatches.
+Expected relations and group selection use trusted labels independent of candidate
+enum values. The four named relations must be distinct; nonstandard numeric
+values remain valid. Positive and negative controls exercise both cases.
 
 Space-age independently applies specified constants to zero, year boundaries,
 wide unsigned seconds, scaling and repeated calls. The pinned 0.005 absolute

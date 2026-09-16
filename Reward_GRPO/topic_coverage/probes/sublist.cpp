@@ -28,11 +28,19 @@ bool contains(const List& whole, const List& part) {
     }
     return false;
 }
-Relation expected(const List& a, const List& b) {
-    if (a == b) return Relation::equal;
-    if (contains(b, a)) return Relation::sublist;
-    if (contains(a, b)) return Relation::superlist;
-    return Relation::unequal;
+// Trusted answers and group routing never use candidate-defined enum values.
+std::string expected(const List& a, const List& b) {
+    if (a == b) return "equal";
+    if (contains(b, a)) return "sublist";
+    if (contains(a, b)) return "superlist";
+    return "unequal";
+}
+void require_distinct_relations() {
+    const std::vector<Relation> values{Relation::equal, Relation::sublist,
+                                      Relation::superlist, Relation::unequal};
+    for (std::size_t i = 0; i < values.size(); ++i)
+        for (std::size_t j = i + 1; j < values.size(); ++j)
+            coverage::require(values[i] != values[j], "named relations are distinct");
 }
 std::string name(Relation value) {
     if (value == Relation::equal) return "equal";
@@ -49,20 +57,21 @@ Relation inverse(Relation value) {
 void inspect(const List& a, const List& b) {
     coverage::context = "first=" + coverage::show(a) + " second=" + coverage::show(b);
     const auto before_a = a, before_b = b;
-    coverage::equal(name(sublist::sublist(a, b)), name(expected(a, b)), "contiguous relation");
+    coverage::equal(name(sublist::sublist(a, b)), expected(a, b), "contiguous relation");
     coverage::equal(a, before_a, "first input unchanged");
     coverage::equal(b, before_b, "second input unchanged");
 }
 }
 void run_topic(const std::string& group) {
+    require_distinct_relations();
     if (group == "equal_relation" || group == "sublist_relation" || group == "superlist_relation" || group == "unequal_relation") {
         const auto lists = bounded_lists();
         for (const auto& a : lists) for (const auto& b : lists) {
             if (a.empty() || b.empty()) continue;  // scored once in empty_lists
             const auto relation = expected(a, b);
-            const std::string requirement = relation == Relation::equal ? "equal_relation"
-                : relation == Relation::sublist ? "sublist_relation"
-                : relation == Relation::superlist ? "superlist_relation" : "unequal_relation";
+            const std::string requirement = relation == "equal" ? "equal_relation"
+                : relation == "sublist" ? "sublist_relation"
+                : relation == "superlist" ? "superlist_relation" : "unequal_relation";
             if (requirement == group) inspect(a, b);
         }
         coverage::equal(lists.size(), std::size_t{341}, "bounded exhaustive domain");
