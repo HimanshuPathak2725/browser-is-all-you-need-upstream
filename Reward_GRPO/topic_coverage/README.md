@@ -120,10 +120,16 @@ exact random sequence.
 Perfect-numbers checks nonpositive-domain exceptions, unit/primes, known perfect
 numbers, every positive number through 4,096, square boundaries, and deterministic
 wide signed-int samples. Its oracle uses prime-factor divisor sums in 64-bit
-arithmetic. The separate positive control uses divisor pairs. The pinned fixture
-reference overflows at 2,000,000,000, so it is preserved and tested as a known
-negative control for wide inputs. The replacement positive control is hash-bound
+arithmetic. The separate positive control uses divisor pairs and is hash-bound
 under `references/perfect-numbers`; it is never included in solver prompts.
+The active fixture repaired in `ba1380e` uses 64-bit accumulation and a division
+loop bound. `pinned_reference_overflow` instead embeds the historical reference
+from `681d3bc9f5fb6803515f58a5a0c04b8c18dc4c50` in `controls.py`; it must still fail
+wide inputs at 2,000,000,000. The alternative positive control widens that frozen
+implementation with checked replacements and retains its floating `sqrt` bound.
+Neither control reads the mutable active registry reference, so fixture repairs
+cannot silently change their intended behavior. The historical implementation
+is audit-only and does not replace the active fixture or its protected hashes.
 
 ## Evidence and validation
 

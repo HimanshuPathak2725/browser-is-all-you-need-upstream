@@ -21,6 +21,64 @@ def edit(sources: dict[str, str], file: str, old: str, new: str) -> dict[str, st
     return {**sources, file: sources[file].replace(old, new, 1)}
 
 
+# Frozen .meta/example.cpp and .h from multi_env_fixtures/perfect-numbers at
+# 681d3bc9f5fb6803515f58a5a0c04b8c18dc4c50; deliberately independent of the registry.
+# CPP SHA-256: 068dec0c2dcb773232ec622cddd55951fd6d13421bf77155219f12d058f54262
+PERFECT_NUMBERS_PINNED = {
+    "perfect_numbers.cpp": """#include <cmath>
+#include <stdexcept>
+
+#include "perfect_numbers.h"
+
+using namespace std;
+
+constexpr int aliquot(const int n) {
+    if (n == 1) {
+        return 0;
+    }
+    int acc = 1;
+    for (int i = 2; i <= sqrt(n); ++i) {
+        if ((n % i) == 0) {
+            acc += i;
+            int complement = n / i;
+            if (complement != i) {
+                acc += complement;
+            }
+        }
+    }
+    return acc;
+}
+
+namespace perfect_numbers {
+classification classify(int n) {
+    if (n <= 0) {
+        throw std::domain_error("Input must be a positive integer");
+    }
+    int aliq = aliquot(n);
+    if (aliq < n) {
+        return classification::deficient;
+    }
+    if (aliq > n) {
+        return classification::abundant;
+    }
+    return classification::perfect;
+}
+}  // namespace perfect_numbers""",
+    "perfect_numbers.h": """#if !defined(PERFECT_NUMBERS_H)
+#define PERFECT_NUMBERS_H
+
+namespace perfect_numbers {
+enum class classification { deficient, perfect, abundant };
+
+classification classify(int n);
+
+}  // namespace perfect_numbers
+
+#endif
+""",
+}
+
+
 def sublist_body(sources: dict[str, str], body: str) -> dict[str, str]:
     text = sources["sublist.cpp"]
     start, end = text.index("bool is_sublist("), text.index("\nList_comparison sublist(")
@@ -208,13 +266,12 @@ def observed_failure_controls(task: str, sources: dict[str, str]) -> list[Contro
 def alternative(task: str, sources: dict[str, str]) -> dict[str, str]:
     if task == "perfect-numbers":
         # Separate implementation: floating sqrt boundary, wide accumulation.
-        from Reward_GRPO.generalized_cpp_grpo import _registry
-        from Reward_GRPO.topic_coverage.runner import reference_sources
-        legacy = reference_sources(_registry().resolve(task))
-        text = legacy["perfect_numbers.cpp"].replace("int acc = 1;", "long long acc = 1;")
-        text = text.replace("constexpr int aliquot", "constexpr long long aliquot")
-        text = text.replace("int aliq = aliquot(n);", "long long aliq = aliquot(n);")
-        return {**legacy, "perfect_numbers.cpp": text}
+        widened = edit(PERFECT_NUMBERS_PINNED, "perfect_numbers.cpp",
+                       "int acc = 1;", "long long acc = 1;")
+        widened = edit(widened, "perfect_numbers.cpp",
+                       "constexpr int aliquot", "constexpr long long aliquot")
+        return edit(widened, "perfect_numbers.cpp",
+                    "int aliq = aliquot(n);", "long long aliq = aliquot(n);")
     if task == "clock":
         return clock_alternative(sources)
     if task == "yacht":
@@ -273,9 +330,7 @@ def controls(task: str, sources: dict[str, str]) -> list[Control]:
                  "if (divisor != n / divisor) sum += n / divisor;",
                  "sum += n / divisor;", "square_boundaries")
         mutation("number_included_as_divisor", "perfect_numbers.cpp", "n == 1 ? 0 : 1", "n + 1LL", "bounded_domain")
-        from Reward_GRPO.generalized_cpp_grpo import _registry
-        from Reward_GRPO.topic_coverage.runner import reference_sources
-        result.append(Control("pinned_reference_overflow", reference_sources(_registry().resolve(task)),
+        result.append(Control("pinned_reference_overflow", dict(PERFECT_NUMBERS_PINNED),
                               "fail", "semantic", "wide_values"))
     elif task == "allergies":
         mutation("reversed_membership", "allergies.cpp",
