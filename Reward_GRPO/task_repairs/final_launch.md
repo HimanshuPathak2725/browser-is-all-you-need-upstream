@@ -76,3 +76,27 @@ the Git worktree. Preserve them with the final evidence package.
 A launch receipt is authorization/provenance evidence, not evidence that training
 or evaluation succeeded. Report actual completion status, checkpoint identities,
 measured per-task outcomes and INVALID counts from the resulting run artifacts.
+
+## Artifact durability before teardown
+
+The run mount uses asynchronous write-back. At exit, the launcher stops its
+periodic writer, writes local run status, performs one bounded final rsync, then
+reads GCS object metadata directly until every regular local file matches server
+size and MD5. It hashes local files again before success, records the verified
+object generations, copies the receipt to the run prefix and separately
+acknowledges that receipt. W&B convenience symlinks are explicitly excluded,
+matching the existing `rsync --no-links`; real payload files remain verified.
+
+The metadata barrier has a 600-second deadline and a 660-second outer process
+limit; receipt acknowledgement has a 60-second deadline and 90-second outer
+limit. Missing/wrong bytes, absent server MD5, authentication failures or timeout
+produce an explicit nonzero durability failure. These checks perform no GCS
+writes themselves and do not change model/checkpoint formats. Generation/checksum
+metadata is also printed to SkyPilot logs if receipt upload cannot finish.
+
+Remote credentials must support Application Default Credentials (the VM service
+account, or an explicitly supplied credential file) and `storage.objects.get` on
+the existing run bucket. Cached mount access alone does not establish this
+permission. No global authentication is changed and credential contents are never
+included in receipts. Abrupt VM preemption can still interrupt the final barrier;
+periodic artifact copies remain the recovery mechanism for that case.

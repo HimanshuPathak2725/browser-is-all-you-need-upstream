@@ -40,6 +40,7 @@ EXTRA_SOURCE_FILES = (
     "src/sitecustomize.py",
     "scripts/check_runtime.py", "scripts/prepare_grpo_adapter.py",
     "scripts/create_grpo_training_gate.py", "scripts/publish_results.py",
+    "scripts/verify_cpp_grpo_artifacts.py",
     "scripts/launch_cpp_grpo_final.py", "scripts/evaluate_cpp_grpo_final.py", "scripts/evaluate.py",
     "Reward_GRPO/cpp_grpo_final_skypilot.yaml",
 )

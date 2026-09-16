@@ -198,6 +198,14 @@ setup: |
   print("GENERALIZED_AUG29_ITER14_WARMSTART_VERIFIED")
   PYVERIFY
 
+  # Fail before generation/training if ADC, transport dependencies or bucket
+  # read permission needed by the final durability barrier are unavailable.
+  timeout --kill-after=5s 60s python3 scripts/verify_cpp_grpo_artifacts.py \
+    --file "${MILES_LORA_SOURCE_ADAPTER_PATH}/adapter_config.json" \
+    --bucket skypilot-filemounts-ubuntu-f0048940-88p8zkcq \
+    --object generalized-cpp-kernel-grpo20-spot-20260829-083214-retry1/checkpoints/grpo_lora_r16/iter_0000014/adapter/adapter_config.json \
+    --timeout 30
+
   if [ ! -f "${MILES_LORA_ADAPTER_PATH}/mtp_strip_manifest.json" ]; then
     test ! -e "${MILES_LORA_ADAPTER_PATH}" || test -z "$(find "${MILES_LORA_ADAPTER_PATH}" -mindepth 1 -print -quit)"
     python3 scripts/prepare_grpo_adapter.py \
@@ -244,12 +252,45 @@ run: |
   }
   preserve_pid=""
   cleanup() {
+    local pipeline_status=$?
+    trap - EXIT
     if [ -n "${preserve_pid}" ]; then
       kill "${preserve_pid}" >/dev/null 2>&1 || true
       wait "${preserve_pid}" >/dev/null 2>&1 || true
       preserve_pid=""
     fi
-    preserve_artifacts
+    # Write status before the final copy. Reading back the cached mount alone
+    # does not acknowledge that GCS has received these exact bytes.
+    {
+      echo "pipeline_status=${pipeline_status}"
+      echo "source_commit=${GLM47_SOURCE_COMMIT}"
+      echo "source_adapter_sha256=${MILES_EXPECTED_SOURCE_ADAPTER_SHA256}"
+      echo "verifier_gate=cpp-grpo-final-v1"
+      echo "reward_contract=${FINAL_REWARD_CONTRACT}"
+      echo "reward_image=${FINAL_REWARD_IMAGE_ID}"
+    } > "${run_root}/run_status.txt"
+    local durability_status=0
+    timeout --kill-after=5s 900s rsync -a --no-links "${run_root}/" "${artifact_root}/" || durability_status=$?
+    local receipt="${run_root}.artifact-upload.json"
+    if [ "${durability_status}" -eq 0 ]; then
+      timeout --kill-after=5s 660s python3 scripts/verify_cpp_grpo_artifacts.py \
+        --root "${run_root}" --bucket skypilot-filemounts-ubuntu-f0048940-88p8zkcq \
+        --prefix "${MILES_RUN_ID}" --receipt "${receipt}" --timeout 600 || durability_status=$?
+    fi
+    if [ -f "${receipt}" ]; then
+      timeout --kill-after=5s 60s cp "${receipt}" "${artifact_root}/artifact-upload.json" || durability_status=$?
+      # Acknowledge the generation receipt too. Its own generation is printed to
+      # SkyPilot logs, avoiding a recursively self-hashed receipt requirement.
+      timeout --kill-after=5s 90s python3 scripts/verify_cpp_grpo_artifacts.py \
+        --file "${receipt}" --bucket skypilot-filemounts-ubuntu-f0048940-88p8zkcq \
+        --object "${MILES_RUN_ID}/artifact-upload.json" --timeout 60 || durability_status=$?
+    fi
+    if [ "${durability_status}" -ne 0 ]; then
+      echo "ARTIFACT_DURABILITY_FAILED status=${durability_status} pipeline_status=${pipeline_status}" >&2
+      exit 3
+    fi
+    echo "CPP_GRPO_ARTIFACTS_DURABLE ${artifact_root}"
+    exit "${pipeline_status}"
   }
   trap cleanup EXIT
   preserve_periodically &
@@ -352,27 +393,6 @@ run: |
     evaluate_checkpoint "${eval_adapter}" "${MILES_RUN_ID}/${final_checkpoint}" trained
   fi
 
-  kill "${preserve_pid}" >/dev/null 2>&1 || true
-  wait "${preserve_pid}" >/dev/null 2>&1 || true
-  preserve_pid=""
-  rsync -a --no-links "${run_root}/" "${artifact_root}/"
-  test -f "${artifact_root}/grpo_lora_r16/run.log"
-  if [ -n "${final_adapter}" ]; then
-    test -f "${artifact_root}/checkpoints/grpo_lora_r16/${final_checkpoint}/adapter/finiteness_receipt.json"
-  fi
-  {
-    echo "train_status=${train_status}"
-    echo "source_commit=${GLM47_SOURCE_COMMIT}"
-    echo "source_adapter_sha256=${MILES_EXPECTED_SOURCE_ADAPTER_SHA256}"
-    echo "data_build_module=${MILES_DATA_BUILD_MODULE}"
-    echo "reward_func=${MILES_CUSTOM_RM_PATH}"
-    echo "source_run=generalized-cpp-kernel-grpo20-spot-20260829-083214-retry1"
-    echo "source_iteration=14"
-    echo "verifier_gate=cpp-grpo-final-v1"
-    echo "reward_contract=${FINAL_REWARD_CONTRACT}"
-    echo "reward_image=${FINAL_REWARD_IMAGE_ID}"
-    echo "thinking=true"
-  } > "${artifact_root}/run_status.txt"
-  echo "GENERALIZED_CPP_GRPO20_ARTIFACTS_PRESERVED ${artifact_root}"
-  trap - EXIT
+  # The EXIT handler stops the periodic writer and verifies durable GCS objects
+  # for both success and failure paths before allowing automatic teardown.
   exit "${train_status}"
