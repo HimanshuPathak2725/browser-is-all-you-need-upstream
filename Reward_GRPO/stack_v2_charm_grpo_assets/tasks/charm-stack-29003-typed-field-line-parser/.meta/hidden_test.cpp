@@ -1,0 +1,4 @@
+#include "typed-field-line-parser.h"
+#include "test_support.h"
+#include <limits>
+int main(){using namespace typed_fields;CHECK(parse_line(" \t").empty());auto f=parse_line("a=-9; b=false; c=12x; d=\"x\\n\\t\\\"\\\\\\;y\"");CHECK(f.size()==4);CHECK(std::get<std::int64_t>(f[0].value)==-9);CHECK(!std::get<bool>(f[1].value));CHECK(std::get<std::string>(f[2].value)=="12x");CHECK(std::get<std::string>(f[3].value)=="x\n\t\"\\;y");CHECK_THROWS(ParseError,parse_line("a=1;a=2"));CHECK_THROWS(ParseError,parse_line("9a=1"));CHECK_THROWS(ParseError,parse_line("a=9223372036854775808"));CHECK_THROWS(ParseError,parse_line("a=\"unterminated"));CHECK_THROWS(ParseError,parse_line("a=\"bad\\q\""));CHECK_THROWS(ParseError,parse_line("a=1;"));std::string nul="a=x";nul.push_back('\0');nul+='y';try{parse_line(std::string_view(nul.data(),nul.size()));CHECK(false);}catch(const ParseError& e){CHECK(e.offset()==3);}return charm_failures?1:0;}

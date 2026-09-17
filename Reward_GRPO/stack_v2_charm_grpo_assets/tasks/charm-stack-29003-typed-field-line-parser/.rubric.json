@@ -1,0 +1,58 @@
+{
+  "action_topology": "header_and_source",
+  "api_capabilities": [
+    "implement_missing_api",
+    "preserve_api",
+    "extend_api",
+    "refactor_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "typed-field-line-parser.h",
+    "typed-field-line-parser.cpp"
+  ],
+  "editable_layout": "header_and_cpp",
+  "family": "parsing-validation",
+  "header_mode": "repaired",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "8ec88d2a5b3eb86ae9e211ffeb0285b3eacf513180ad49d91a30cb2ad4920a7f",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "typed_fields::parse_line",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "ef615cb48772c5e79a00ea145538578947cd0eaf27f72e8266175ccf5ff1f91a",
+  "starter_type": "semantic_bug",
+  "task_id": "charm-stack-29003-typed-field-line-parser",
+  "task_role": "repair_trajectory",
+  "title": "Typed Field Line Parser"
+}

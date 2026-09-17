@@ -177,8 +177,6 @@ def run_with_receipt(receipt_dir, impl, args, argv=None):
             "stderr_sha256": sha256_bytes(stderr_text.encode("utf-8")),
             "stdout_bytes": len(stdout_text.encode("utf-8")),
             "stderr_bytes": len(stderr_text.encode("utf-8")),
-            "stdout_tail": stdout_text[-4000:],
-            "stderr_tail": stderr_text[-4000:],
         },
         "command": command,
         "duration_seconds": duration,

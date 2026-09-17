@@ -1,0 +1,57 @@
+{
+  "action_topology": "source_only",
+  "api_capabilities": [
+    "implement_missing_api",
+    "extend_api",
+    "repair_api",
+    "refactor_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "address-token-matcher.cpp"
+  ],
+  "editable_layout": "cpp_only",
+  "family": "parsing-validation",
+  "header_mode": "reconstructed",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "044e641c64a98677791cefaa5580c220482b6b3a4b90aec402a2dd970c3433be",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "address_tokens::match",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "fd7ce084770a7eea093091856372c13727b21ce9a47d41b9892d6b5d30f8471e",
+  "starter_type": "empty",
+  "task_id": "charm-stack-29003-address-token-matcher",
+  "task_role": "direct_verified_success",
+  "title": "Address Token Matcher"
+}

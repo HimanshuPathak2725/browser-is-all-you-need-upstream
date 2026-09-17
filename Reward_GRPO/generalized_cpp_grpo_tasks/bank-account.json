@@ -1,0 +1,32 @@
+{
+  "candidate_files": [
+    "bank_account.cpp",
+    "bank_account.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/bank-account",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.md": "130ae84dca29927b614b6a7939b9aa6456c22283f16f34572a3a40147d612cce",
+    ".docs/introduction.md": "2e727a4587e11d589e4fb38116cc24e1550d04d781725bdb50ed70028dedce2a",
+    ".meta/config.json": "93ed393352a6ef81cdb763f0d3653544b6e93ca66a36cb19a3276244c247982c",
+    ".meta/example.cpp": "62e482954226adb2554bfdd02b41feed6bc0f213cdd50b33eae3e962245554a3",
+    ".meta/example.h": "25edb525bd6d5796c42cc30309e02e3b7b28a94056997f2a15335976b6c0b110",
+    ".meta/tests.toml": "ed82182dba3714c9bdb10bcb5efa199814b03a1e5c474497b52696248181f1aa",
+    "CMakeLists.txt": "9f97b18ee31d7b22e34c8334d28f45947f7f34548f3659cead93fac35bb33636",
+    "bank_account.cpp": "fb52045ac39b583a5eb979a4a4fef61760db59cdd32cbff06c30f41f6419cc3b",
+    "bank_account.h": "8c4b10886bda02bd21516b36bbf15c1fbd05b9e01e196f4955eb1f4dc67009b0",
+    "bank_account_test.cpp": "5c7b2f1bf6abe82c3e933e5ac722c1ed52ff1ed84312af5fcacdca13c18dcd2d",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260"
+  },
+  "schema_version": 1,
+  "source": "official:Aider-AI/polyglot-benchmark@7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f/cpp/exercises/practice/bank-account",
+  "task_id": "bank-account"
+}

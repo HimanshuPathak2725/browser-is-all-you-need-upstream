@@ -116,7 +116,7 @@ def response_from_sources(sources: Mapping[str, str]) -> str:
 def parse_result(command: Mapping[str, Any], group: str) -> dict[str, Any]:
     # The execution layer owns launch_error (OS/close-on-exec error pipe).
     # Candidate stdout/stderr and exit codes cannot manufacture that evidence.
-    output = command["stdout_tail"] + "\n" + command.get("stderr_tail", "")
+    output = command.get("stdout_tail", "") + "\n" + command.get("stderr_tail", "")
     infrastructure = _BUILD.runtime_infrastructure_failure(
         output, launch_error=command.get("launch_error"))
     if infrastructure:

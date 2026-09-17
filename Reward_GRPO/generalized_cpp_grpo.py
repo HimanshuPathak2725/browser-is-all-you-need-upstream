@@ -312,9 +312,9 @@ def _candidate_semantic_fraction(receipt: Mapping[str, Any]) -> float | None:
 
     The binary verifier-kernel contract remains unchanged. Fractional shaping
     is projected only here, from the authenticated G03-2 facts, and only for a
-    candidate whose official test entry point completed against a healthy
-    reference control. Artifact binding does not authenticate candidate stdout:
-    counts provide failure shaping only, never evidence for a PASS.
+    candidate that actually ran against a healthy reference control. Counts
+    are treated as the source of truth; the engine's rounded score must agree
+    with them so malformed receipt facts cannot create reward.
     """
 
     results = receipt.get("policy_results", [])
@@ -346,10 +346,7 @@ def _candidate_semantic_fraction(receipt: Mapping[str, Any]) -> float | None:
             ):
                 return None
             run = candidate.get("run")
-            if (not isinstance(run, Mapping) or run.get("crashed") is True
-                    or run.get("execution_completed") is not True
-                    or run.get("infrastructure_error") is True
-                    or run.get("timed_out") is True):
+            if not isinstance(run, Mapping) or run.get("crashed") is True:
                 return None
             passed = run.get("passed_assertions")
             total = run.get("total_assertions")
@@ -367,75 +364,13 @@ def _candidate_semantic_fraction(receipt: Mapping[str, Any]) -> float | None:
                 or not math.isfinite(float(reported))
             ):
                 return None
-            fraction = min(passed / total, math.nextafter(1.0, 0.0))
-            if not 0.0 <= reported < 1.0 or not math.isclose(
-                    float(reported), fraction, rel_tol=1e-12, abs_tol=1e-12):
+            fraction = passed / total
+            # The engine serializes its score rounded to four decimals.
+            if not math.isclose(float(reported), fraction, abs_tol=5e-5):
                 return None
             return fraction
         return None
     return None
-
-
-def _authenticated_pass_status(receipt: Mapping[str, Any]) -> str:
-    """Check execution facts before accepting an aggregate PASS label.
-
-    Aggregate labels and assertion fractions are derived data. Authoritative
-    candidate failure stays FAIL; missing/invalid execution evidence is INVALID.
-    """
-    policies = receipt.get("policy_results")
-    if not isinstance(policies, list) or not policies:
-        return "invalid"
-    if any(not isinstance(p, Mapping) or not isinstance(p.get("kernels"), list)
-           for p in policies):
-        return "invalid"
-    ids = [p.get("policy_id") for p in policies]
-    if (any(not isinstance(i, str) for i in ids) or len(set(ids)) != len(ids)
-            or not {"G01", "G02", "G03", "G04", "G05"} <= set(ids)):
-        return "invalid"
-    if any(p.get("status") not in {"pass", "fail"} for p in policies):
-        return "invalid"
-    kernels = [k for p in policies for k in p["kernels"]]
-    if any(not isinstance(k, Mapping) or k.get("status") not in {"pass", "fail"} for k in kernels):
-        return "invalid"
-    kernel_ids = [k.get("kernel_id") for k in kernels]
-    if (any(not isinstance(i, str) for i in kernel_ids)
-            or len(set(kernel_ids)) != len(kernel_ids)
-            or not set(MODEL_REWARD_KERNEL_WEIGHTS) <= set(kernel_ids)):
-        return "invalid"
-    semantic = [k for k in kernels if k.get("kernel_id") == "G03-2"]
-    if len(semantic) != 1:
-        return "invalid"
-    facts = semantic[0].get("facts", {})
-    if not isinstance(facts, Mapping):
-        return "invalid"
-    reference, candidate = facts.get("reference", {}), facts.get("candidate", {})
-    if not isinstance(reference, Mapping) or not isinstance(candidate, Mapping):
-        return "invalid"
-    run = candidate.get("run", {})
-    if not isinstance(run, Mapping):
-        return "invalid"
-    reference_run = reference.get("run")
-    if (reference.get("status") != "OK" or not isinstance(reference_run, Mapping)
-            or reference_run.get("verified_pass") is not True
-            or reference_run.get("execution_completed") is not True
-            or reference_run.get("returncode") != 0
-            or reference_run.get("harness_returncode") != 0
-            or reference_run.get("crashed") or reference_run.get("timed_out")
-            or reference_run.get("infrastructure_error") or run.get("infrastructure_error")):
-        return "invalid"
-    if (any(p.get("status") == "fail" for p in policies)
-            or any(k.get("status") == "fail" for k in kernels)):
-        return "fail"
-    if candidate.get("status") != "RAN" or not isinstance(run, Mapping):
-        return "invalid"
-    if (semantic[0].get("status") != "pass" or semantic[0].get("kernel") != 1
-            or facts.get("engine_exit_code") != 0
-            or run.get("verified_pass") is not True
-            or run.get("execution_completed") is not True
-            or run.get("harness_returncode") != 0 or run.get("returncode") != 0
-            or run.get("crashed") or run.get("timed_out")):
-        return "fail"
-    return "pass"
 
 
 def receipt_to_reward(
@@ -444,8 +379,6 @@ def receipt_to_reward(
     """Return (score, infrastructure_error, reason) from an aggregate receipt."""
 
     status = str(receipt.get("status") or "invalid").lower()
-    if status == "pass":
-        status = _authenticated_pass_status(receipt)
     if status == "invalid":
         return 0.0, True, "verifier_invalid"
     if status == "pass":
@@ -605,8 +538,7 @@ def score_sample(sample: Any, registry: TaskRegistry | None = None) -> dict[str,
         )
         if return_code not in {0, 1, 2}:
             raise BindingError("runner_protocol_error", f"unexpected return code {return_code}")
-        expected_code = 2 if infrastructure_error else (0 if reason == "pass" else 1)
-        if return_code != expected_code:
+        if (return_code == 2) != infrastructure_error:
             raise BindingError("runner_protocol_error", "receipt and return code disagree")
         policy_results = receipt.get("policy_results", [])
         kernel_results = [

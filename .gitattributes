@@ -1,0 +1,12 @@
+# Preserve byte-bound third-party fixture sources while keeping project-authored
+# files subject to Git's normal whitespace validation.
+Reward_GRPO/multi_env_fixtures/all-your-base/test/catch.hpp whitespace=-blank-at-eof
+Reward_GRPO/multi_env_fixtures/binary-search-tree/.meta/example.h whitespace=-blank-at-eol
+Reward_GRPO/multi_env_fixtures/binary-search-tree/binary_search_tree_test.cpp whitespace=-blank-at-eol
+Reward_GRPO/multi_env_fixtures/binary-search-tree/test/catch.hpp whitespace=-blank-at-eof
+Reward_GRPO/multi_env_fixtures/diamond/diamond_test.cpp whitespace=-blank-at-eol
+Reward_GRPO/multi_env_fixtures/diamond/test/catch.hpp whitespace=-blank-at-eof
+Reward_GRPO/multi_env_fixtures/linked-list/test/catch.hpp whitespace=-blank-at-eof
+Reward_GRPO/multi_env_fixtures/parallel-letter-frequency/parallel_letter_frequency.h whitespace=-blank-at-eof
+Reward_GRPO/multi_env_fixtures/parallel-letter-frequency/test/catch.hpp whitespace=-blank-at-eof
+Reward_GRPO/multi_env_fixtures/robot-name/test/catch.hpp whitespace=-blank-at-eof

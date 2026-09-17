@@ -259,7 +259,7 @@ def observed_failure_controls(task: str, sources: dict[str, str]) -> list[Contro
                          "complex_numbers.cpp": '#include "complex_numbers.h"\n'}
             result.append(Control(name, candidate, expected, kind))
         add("missing_link_definition", "complex_numbers.cpp",
-            "double Complex::abs() const { return sqrt(re * re + im * im); }", "", None)
+            "double Complex::abs() const { return std::hypot(re, im); }", "", None)
     return result
 
 
@@ -286,7 +286,7 @@ def alternative(task: str, sources: dict[str, str]) -> dict[str, str]:
         # Both interpretations of the disputed zero boundary must remain accepted.
         result = {**sources, "bank_account.cpp": sources["bank_account.cpp"].replace(
             "std::lock_guard guard(mutex_);", "std::scoped_lock guard(mutex_);")}
-        return edit(result, "bank_account.cpp", "if (amount < 0)", "if (amount <= 0)")
+        return edit(result, "bank_account.cpp", "if (amount <= 0)", "if (amount < 0)")
     if task == "circular-buffer":
         return {"circular_buffer.h": BUFFER_ALTERNATIVE, "circular_buffer.cpp": ""}
     if task == "complex-numbers":

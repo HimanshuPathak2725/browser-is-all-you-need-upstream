@@ -34,7 +34,7 @@ def run_checks(args, manifest):
                         common.candidate_path(args.candidate_dir, sources[0])]
     engine_args.append("--json")
     result = common.run_engine(common.find_engine(ENGINE), engine_args)
-    report = common.parse_engine_json(result, "two-stage build", allow_invalid=True)
+    report = common.parse_engine_json(result, "two-stage build")
 
     build_status = report.get("status")
     facts_common = {

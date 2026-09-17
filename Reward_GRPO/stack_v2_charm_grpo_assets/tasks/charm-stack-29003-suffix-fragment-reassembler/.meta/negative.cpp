@@ -1,0 +1,3 @@
+#include "suffix-fragment-reassembler.h"
+#include <stdexcept>
+namespace suffix_reassembly { Reassembler::Reassembler(std::size_t n):bytes_(n),present_(n,false){} std::size_t Reassembler::contiguous_size()const noexcept{return delivered_;} bool Reassembler::complete()const noexcept{return delivered_==bytes_.size();} std::vector<std::uint8_t> Reassembler::accept(const Fragment& f){if(f.offset+f.data.size()>bytes_.size())throw std::out_of_range("fragment");for(std::size_t i=0;i<f.data.size();++i){bytes_[f.offset+i]=f.data[i];present_[f.offset+i]=true;}auto old=delivered_;while(delivered_<bytes_.size()&&present_[delivered_])++delivered_;return {bytes_.begin()+old,bytes_.begin()+delivered_};}}

@@ -1,0 +1,29 @@
+{
+  "candidate_files": [
+    "binary_search_tree.cpp",
+    "binary_search_tree.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/binary-search-tree",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.md": "8b640786fec78b7efed20e4606d62c67f09c45c0e4e176f120cf387b1ad78e2f",
+    ".meta/config.json": "d220b238dd194ef5f26c06a1e19198eff3094417cd80b9a475116942e574c8d2",
+    ".meta/example.h": "8b6b2e7228912896cd76fae4908a7408f09349fc1ccbe12631af3d9d8460b6a7",
+    "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",
+    "binary_search_tree.cpp": "b187ba8545d85d0589049755cef9e1a9db612cd984f82d18b72dca3890437681",
+    "binary_search_tree.h": "9af563e78599e09979e26c08a2c14e967d9eb3761d6960eecf732b6a619f6160",
+    "binary_search_tree_test.cpp": "79ff6a886a42d7691ec0240f9ea08191016f1042a752da9c2809a3da24c361e5",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260"
+  },
+  "schema_version": 1,
+  "source": "official:Aider-AI/polyglot-benchmark@7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f/cpp/exercises/practice/binary-search-tree",
+  "task_id": "binary-search-tree"
+}

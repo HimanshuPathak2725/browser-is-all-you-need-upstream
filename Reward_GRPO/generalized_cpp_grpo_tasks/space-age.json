@@ -1,0 +1,32 @@
+{
+  "candidate_files": [
+    "space_age.cpp",
+    "space_age.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/space-age",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.md": "d6a3c9b9aefec380d03ce84ab85ffaf50340fb25acf76194f087ebf4b44397a6",
+    ".docs/introduction.md": "353421ecdbb3a90d19e9fbe6b6d9f8f87f2eb6c923e04f281ef3d0c9794b4bbc",
+    ".meta/config.json": "ab6c96ae515f88debf3c7cf14cb27e78f341c0e60566b7d7c2e47cbac7495a58",
+    ".meta/example.cpp": "6a651628fa7accdacc4ba9e9ae66e3f5010b464c91951b3e53d277f4096bf753",
+    ".meta/example.h": "eb83d8dc181ab8c515218c0164fd568446ac670fbe222f53c785b6e6c8176d70",
+    ".meta/tests.toml": "bc2bd75b739a86381b3df8b725934bf74e76c5141dcedf93b7c74c33ee7905b0",
+    "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",
+    "space_age.cpp": "cf51356a5541aedf60e2e626c5de2161c8c67da843215b5f8ed0aae3b0b4ec4d",
+    "space_age.h": "e3451de7e837ff2e49d9515b4f6facb93db73e0029a6ae599c03a6c0fb8b3f78",
+    "space_age_test.cpp": "9362253be5bc92f9cd4d2e5cee817e9d44ba5a812632304d73c1a81a48d3f216",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260"
+  },
+  "schema_version": 1,
+  "source": "official:Aider-AI/polyglot-benchmark@7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f/cpp/exercises/practice/space-age",
+  "task_id": "space-age"
+}

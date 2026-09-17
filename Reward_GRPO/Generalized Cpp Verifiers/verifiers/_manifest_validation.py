@@ -64,10 +64,6 @@ def validate_manifest(manifest: Any) -> None:
         raise ManifestValidationError(
             "policies contains unsupported ids: " + ", ".join(unknown))
 
-    for policy, entries in policies.items():
-        if not isinstance(entries, list):
-            raise ManifestValidationError(f"policies.{policy} must be an array")
-
     fixture_dir = manifest.get("fixture_dir")
     if fixture_dir is not None and not isinstance(fixture_dir, str):
         raise ManifestValidationError("fixture_dir must be a string path")

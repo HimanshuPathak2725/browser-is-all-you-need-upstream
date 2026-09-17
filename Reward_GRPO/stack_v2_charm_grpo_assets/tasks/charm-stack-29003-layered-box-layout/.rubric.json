@@ -1,0 +1,58 @@
+{
+  "action_topology": "header_and_source",
+  "api_capabilities": [
+    "implement_missing_api",
+    "preserve_api",
+    "repair_api",
+    "refactor_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "layered-box-layout.h",
+    "layered-box-layout.cpp"
+  ],
+  "editable_layout": "header_and_cpp",
+  "family": "spatial-graph",
+  "header_mode": "editable",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "1adf6a381f7ff61808687feebf34a4695c9e50e02fe2e5dcdde8bd3ddca33778",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "layered_boxes::arrange",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "8b4d68dfc4e6ca8c0090f3e1ffc65d481b9665cb6edf206672019536fe140f5b",
+  "starter_type": "skeleton",
+  "task_id": "charm-stack-29003-layered-box-layout",
+  "task_role": "direct_verified_success",
+  "title": "Layered Box Layout"
+}
