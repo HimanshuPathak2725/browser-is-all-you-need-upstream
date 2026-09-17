@@ -6,7 +6,7 @@ Verify, before any compilation, that the candidate declares every symbol the off
 
 | Kernel | Question | `+1` | `-1` | `INVALID` |
 |---|---|---|---|---|
-| G01-A | Does the candidate declare every test-referenced symbol? | All required symbols declared with correct namespace/shape/visibility | One or more required symbols missing, misdeclared, or wrong visibility | Manifest, fixture, or candidate unusable |
+| G01-1 | Does the candidate declare every test-referenced symbol? | All required symbols declared with correct namespace/shape/visibility | One or more required symbols missing, misdeclared, or wrong visibility | Manifest, fixture, or candidate unusable |
 
 ## Shared method
 
@@ -20,6 +20,14 @@ Single-kernel policy. A symbol defect is a model failure (`-1`); unusable inputs
 
 `python verifier_01_structural_api_gate.py --candidate-dir TASK --manifest MANIFEST --expected-manifest-sha256 DIGEST --output-dir OUT`
 
-## Evidence
+## Evidence boundary
 
-`generalized_verifier_docs/validation/VALIDATION.md` (catches recorded failures on 5 tasks; zero false positives on 6 reference solutions).
+The previous release cited the following historical evidence (not bundled or
+revalidated by this focused PR):
+
+> `generalized_verifier_docs/validation/VALIDATION.md` (catches recorded failures on 5 tasks; zero false positives on 6 reference solutions).
+
+For current implementation checks, run the repository's hermetic
+`generalized_verifier_docs/validation/self_check.py` and
+`tests/test_generalized_cpp_reward_reliability.py`. Synthetic local checks do not
+establish those historical counts or full benchmark/task coverage.

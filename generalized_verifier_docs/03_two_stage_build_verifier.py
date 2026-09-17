@@ -23,6 +23,7 @@ import glob
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import sys
@@ -35,7 +36,7 @@ CXXFLAGS = ["-std=c++17", "-Wall", "-Wextra", "-Wpedantic", "-Werror",
 
 class BuildResult:
     def __init__(self, status, stage, feedback, stderr="", workspace=None,
-                 binary=None, failure_kind=None, returncode=None):
+                 binary=None, failure_kind=None, returncode=None, completion_token=None):
         self.status = status        # PASS | CE-1 | CE-2 | LE | ERROR
         self.stage = stage
         self.feedback = feedback
@@ -44,6 +45,7 @@ class BuildResult:
         self.binary = binary
         self.failure_kind = failure_kind
         self.returncode = returncode
+        self.completion_token = completion_token
 
     def as_dict(self):
         return {"status": self.status, "stage": self.stage,
@@ -84,7 +86,14 @@ def runtime_failure_diagnostic(output):
 
 
 def runtime_infrastructure_failure(output, *, launch_error=None, execution_completed=False):
-    """Require launch-layer evidence before attributing infrastructure failure."""
+    """Attribute runtime infrastructure failure only with launch-layer evidence.
+
+    Precedence: witnessed completion wins over textual diagnostics; otherwise
+    an OS invocation error or the launcher's close-on-exec error channel is
+    required for INVALID. Candidate output, including loader/resource phrases
+    and early exits, can never supply that evidence. Text may refine an already
+    established launch failure and is retained separately for diagnostics.
+    """
     if execution_completed or not launch_error:
         return None
     return (runtime_failure_diagnostic(str(launch_error))
@@ -104,7 +113,7 @@ def _run(cmd, cwd, stage):
             "ERROR", stage, f"compiler invocation failed: {error}", stderr,
             cwd, failure_kind="compiler_timeout" if isinstance(error, subprocess.TimeoutExpired)
             else "compiler_unavailable")) from error
-    if proc.returncode < 0 or _TOOL_FAILURE.search(proc.stderr):
+    if compiler_infrastructure_failure(proc.returncode, proc.stderr):
         raise BuildInfrastructureError(BuildResult(
             "ERROR", stage, "compiler/toolchain failed; candidate attribution is unavailable",
             proc.stderr, cwd, failure_kind="toolchain_failure", returncode=proc.returncode))
@@ -165,21 +174,23 @@ def prepare_workspace(fixture_dir, header, source=None, workspace=None):
     return workspace, stem
 
 
-def build_candidate(fixture_dir, header, source=None):
+def build_candidate(fixture_dir, header, source=None, *, authenticate_main=False):
     """Two-stage build. Returns a BuildResult."""
     try:
-        return _build_candidate(fixture_dir, header, source)
+        return _build_candidate(fixture_dir, header, source, authenticate_main=authenticate_main)
     except BuildInfrastructureError as error:
         return error.result
 
 
-def _build_candidate(fixture_dir, header, source=None):
+def _build_candidate(fixture_dir, header, source=None, *, authenticate_main=False):
+    workspace = None
     try:
         workspace = tempfile.mkdtemp(prefix="twostage-")
         workspace, stem = prepare_workspace(fixture_dir, header, source,
                                             workspace)
     except (OSError, FileNotFoundError) as exc:
-        return BuildResult("ERROR", 0, f"setup failed: {exc}")
+        return BuildResult("ERROR", 0, f"setup failed: {exc}", workspace=workspace,
+                           failure_kind="workspace_setup")
 
     cpp = stem + ".cpp"
     test_cpp = stem + "_test.cpp"
@@ -216,9 +227,51 @@ def _build_candidate(fixture_dir, header, source=None):
                            "the task package itself is broken", err_main,
                            workspace, failure_kind="harness_compile", returncode=rc)
 
+    extra_link = []
+    token = None
+    if authenticate_main:
+        # GNU-compatible ELF linkers wrap the trusted harness entry point.
+        # The private pipe is separate from candidate stdout. Early exit and
+        # forged Catch summaries cannot stand in for return from official main.
+        # This is a completion check, not isolation from hostile native code.
+        token = secrets.token_hex(32)
+        bridge = r"""
+#include <cstdio>
+#include <cstdlib>
+#include <fcntl.h>
+#include <unistd.h>
+extern "C" int __real_main(int, char**);
+extern "C" int __wrap_main(int argc, char** argv) {
+    const char* value = std::getenv("G03_COMPLETION_FD");
+    const int fd = value ? std::atoi(value) : -1;
+    ::unsetenv("G03_COMPLETION_FD");
+    if (fd >= 0) ::fcntl(fd, F_SETFD, FD_CLOEXEC);
+    const int result = __real_main(argc, argv);
+    char record[128];
+    const int size = std::snprintf(record, sizeof(record), "TOKEN:%d\n", result);
+    if (fd >= 0 && size > 0 && size < static_cast<int>(sizeof(record))) {
+        const auto written = ::write(fd, record, static_cast<size_t>(size));
+        (void)written;
+        ::close(fd);
+    }
+    return result;
+}
+""".replace("TOKEN", token)
+        try:
+            with open(os.path.join(workspace, "verified-main.cpp"), "w") as handle:
+                handle.write(bridge)
+        except OSError as error:
+            return BuildResult("ERROR", 2, f"completion harness setup failed: {error}",
+                               workspace=workspace, failure_kind="harness_setup")
+        rc, err = _run([CXX, *CXXFLAGS, "-c", "verified-main.cpp", "-o", "verified-main.o"], workspace, 2)
+        if rc != 0:
+            return BuildResult("ERROR", 2, "completion harness failed to compile", err,
+                               workspace, failure_kind="harness_compile", returncode=rc)
+        extra_link = ["verified-main.o", "-Wl,--wrap=main"]
+
     binary = os.path.join(workspace, stem + "_tests")
     rc, err_link = _run([CXX, stem + ".o", stem + "_test.o", "tests-main.o",
-                         "-o", binary, "-pthread"], workspace, 2)
+                         *extra_link, "-o", binary, "-pthread"], workspace, 2)
     if rc != 0:
         status, kind, feedback = classify_link_failure(err_link)
         return BuildResult(status, 2, feedback, err_link, workspace,
@@ -226,7 +279,7 @@ def _build_candidate(fixture_dir, header, source=None):
 
     return BuildResult("PASS", 2, "build clean: candidate compiles and "
                                   "links against the official test",
-                       workspace=workspace, binary=binary)
+                       workspace=workspace, binary=binary, completion_token=token)
 
 
 def main(argv=None):
@@ -263,9 +316,11 @@ def run(args):
         if result.status not in ("PASS",) and result.stderr:
             tail = "\n".join(result.stderr.splitlines()[:10])
             print(f"--- compiler output (first lines) ---\n{tail}")
-    if result.workspace and result.status != "PASS":
+    # The CLI returns a report, not a live binary; imported callers retain
+    # ownership of build_candidate() workspaces as before.
+    if result.workspace:
         shutil.rmtree(result.workspace, ignore_errors=True)
-    return 0 if result.status == "PASS" else 1
+    return 0 if result.status == "PASS" else 2 if result.status == "ERROR" else 1
 
 
 if __name__ == "__main__":

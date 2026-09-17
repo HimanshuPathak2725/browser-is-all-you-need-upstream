@@ -1,495 +1,252 @@
-# browser-is-all-you-need
+# Fixed26 results
 
-## Latest Smoke Stats
+## Reference evaluations
 
-Completed on May 17, 2026 against `harbor-domdiff-browser-swe` with SkyRL R3 on Google Cloud (`asia-southeast1-a`, `a2-highgpu-8g`, `A100:8`) and the laptop-local `android-world-domdiff:local` reward image exposed through Cloudflare quick tunnel.
+| Result | Pass@1 | Multi turn with feedback (turn=2) | Trials | Samples |
+| --- | ---: | ---: | ---: | ---: |
+| [GLM-4.7-Flash base](results/base-fixed26-20260711/) | 0.5/26 mean | 4.5/26 mean | 4 | 104 |
+| [Luna](results/luna-fixed26-20260805/) | 6.25/26 mean | 16.75/26 mean | 4 | 104 |
 
-| Metric | Value |
-| --- | ---: |
-| Job status | `SUCCEEDED` |
-| Tasks | 2 |
-| Samples per task | 2 |
-| Generated trajectories | 4 |
-| `reward/avg_pass_at_2` | `1.0000` |
-| `reward/avg_raw_reward` | `0.3354` |
-| `environment/domdiff_total` | `0.6708` |
-| `environment/harbor_reward` | `0.3354` |
-| `environment/chromiumrl_enabled` | `1.0000` |
-| `environment/harbor_oracle` | `1.0000` |
-| `environment/rubric_passed` | `0.0000` |
-| Avg response length | `177.0` tokens |
-| Generation time | `670.2853s` |
-| Policy train time | `40.5535s` |
-| End-to-end R3 step time | `749.0343s` |
-| Policy grad norm | `19.4491` |
+| Result | Pass@1 SD, range, 95% CI (out of 26) | Multi turn with feedback (turn=2) SD, range, 95% CI (out of 26) | Conditional turn-2 recovery |
+| --- | --- | --- | ---: |
+| GLM-4.7-Flash base | 0.58; 0-1; 0-1.25 | 1.29; 3-6; 2.25-6.75 | 16/102 (15.7%; CI 7.8-24.8%) |
+| Luna | 1.89; 5-9; 3.25-9.5 | 1.5; 15-18; 12.75-20.5 | 42/79 (53.2%; CI 36.8-70%) |
 
-Task IDs: `radix-ui__primitives-3548`, `chakra-ui__chakra-ui-8905`. This is an oracle-mode paid infrastructure smoke: it verifies the GCP/SkyPilot/SkyRL/Harbor/DOMDiff pipeline end to end, not a held-out competition leaderboard score.
+## Post-training evaluations
 
-`browser-is-all-you-need` provides `w8-biayn`, a command-and-control CLI for BrowserGym reinforcement-learning smoke runs on rLLM, SkyRL, SkyPilot, and Google Cloud. The repository also carries the isolated GLM-4.7 C++ GRPO launch, evaluation, reward, and frozen task packages described below.
+| Result | Pass@1 | Multi turn with feedback (turn=2) | Trials | Samples |
+| --- | ---: | ---: | ---: | ---: |
+| [SFT v5, Aider-format](results/sft-v5-aiderfmt-1117-4trials/) | 6/26 mean | 10.25/26 mean | 4 | 104 |
+| [Synth v1, epoch 50](results/synth-v1-ep50-9.5-mean/) | 9.5/26 mean | 12/26 mean | 4 | 104 |
+| [execution-midband-RL-v1](https://huggingface.co/TokenBender/glm47-bank-account-official-grpo20) | 8.25/26 mean | 13/26 mean | 4 | 104 |
+| [execution-midband-RL-v2](https://huggingface.co/TokenBender/execution-midband-RL-v2) | 10.5/26 mean | 14.5/26 mean | 4 | 104 |
+| [Phone Number kernel12 GRPO20, iter 14](results/phone-number-kernel12-GRPO20/) | 11.25/26 mean | 15.25/26 mean | 4 | 104 |
+| [Generalized C++ kernel GRPO20, iter 14](https://huggingface.co/Terrano09/generalized-cpp-kernel-GRPO20) | 11.75/26 mean | 16/26 mean | 4 | 104 |
 
-The current implementation supports MiniWoB smoke runs, WebArena config rendering, DOMDiff reward hosting, and a Harbor DOMDiff browser/SWE R3 smoke that runs task containers on GCP while using the local DOMDiff image through a Cloudflare reward tunnel.
+| Result | Pass@1 SD, range, 95% CI (out of 26) | Multi turn with feedback (turn=2) SD, range, 95% CI (out of 26) | Conditional turn-2 recovery |
+| --- | --- | --- | ---: |
+| SFT v5, Aider-format | 1.63; 4-8; 3-9.25 | 1.71; 8-12; 7-13.75 | 17/80 (21.2%; CI 11.9-31.6%) |
+| Synth v1, epoch 50 | 0.58; 9-10; 5.75-13.5 | 0.82; 11-13; 8.25-15.75 | 10/66 (15.2%; CI 7.4-24.4%) |
+| execution-midband-RL-v1 | 2.06; 6-11; 4.75-12 | 0.82; 12-14; 9-17 | 19/71 (26.8%; CI 14.5-41.4%) |
+| execution-midband-RL-v2 | 1.29; 9-12; 7-14 | 2.08; 12-17; 10.5-18.5 | 16/62 (25.8%; CI 12.9-41.9%) |
+| Phone Number kernel12 GRPO20, iter 14 | 0.5; 11-12; 7.5-15 | 0.5; 15-16; 11-19.25 | 16/59 (27.1%; CI 13.1-44.2%) |
+| Generalized C++ kernel GRPO20, iter 14 | 1.50; 10-13; 8-15.5 | 1.41; 14-17; 11.75-20 | 17/57 (29.8%; CI 14.5-48.9%) |
 
-## Bootstrap
+Statistics: [method and summary](results/statistics.md) · [per-task frequencies](results/per_task_success.csv) · [recompute](results/compute_statistics.py)
 
-Start from a fresh clone:
+SFT v5 artifacts: [checkpoint](https://huggingface.co/TokenBender/glm47-aider-sft-v5-aiderfmt-1117-3ep/tree/5d06951941a30939920fb2b7558aa95085531d52) · [training dataset](https://huggingface.co/datasets/TokenBender/glm47-aider-posttraining-data/blob/6ef50c6fd1aca637c3df2df00c9aab4120140797/datasets/aiderfmt-api-contracts-20260727/sft/sft-v5-aiderfmt-1117-api-contracts.jsonl) · [evaluation evidence](https://huggingface.co/datasets/TokenBender/glm47-aider-fixed26-responses/tree/2397232ab6476b414a7af99d9ee6cfe45a856c86/evals/sft-v5-aiderfmt-1117-fixed26contract-pass8-20260727)
 
-```bash
-./scripts/bootstrap.sh
-cp /secure/path/service-account.json .gcp-service-account.json
-uv run w8-biayn doctor --cloud --domdiff
-uv run w8-biayn launch miniwob --dry-run
-uv run w8-biayn harbor validate
-```
+Synth v1 artifacts: [reproducibility bundle](https://huggingface.co/TokenBender/glm47-synth-v1-reproducibility) · [checkpoint archive](https://huggingface.co/TokenBender/glm47-synth-v1-100ep) · [training dataset](https://huggingface.co/datasets/TokenBender/glm47-synth-v1-dataset) · [evaluation archive](https://huggingface.co/datasets/TokenBender/glm47-synth-v1-fixed26-evals) · [W&B run](https://wandb.ai/ahm-rimer/glm47-aider-cpp-sft/runs/glm47-synth-memorization-v1-100ep-20260731T071000Z)
 
-Run the real MiniWoB smoke:
+execution-midband-RL-v1 artifacts: [run archive](https://huggingface.co/TokenBender/glm47-bank-account-official-grpo20) · [final adapter](https://huggingface.co/TokenBender/glm47-bank-account-official-grpo20/tree/main/runs/issue111-bank-official-grpo20-20260817T151213Z/checkpoints/grpo_lora_r16/iter_0000019/adapter) · [evaluation evidence](https://huggingface.co/TokenBender/glm47-bank-account-official-grpo20/tree/main/fixed26-evaluations/issue111-grpo20-iter19-fixed26-mt2-suite-20260817T193037Z) · [evaluation method](results/execution-midband-rl-v1/method/)
 
-```bash
-uv run w8-biayn launch miniwob
-```
+execution-midband-RL-v2 artifacts: [run archive](https://huggingface.co/TokenBender/execution-midband-RL-v2) · [final adapter](https://huggingface.co/TokenBender/execution-midband-RL-v2/tree/main/execution-bank-RL-v2-think-r2/checkpoints/grpo_lora_r16/iter_0000019/adapter) · [evaluation evidence](https://huggingface.co/TokenBender/execution-midband-RL-v2/tree/main/execution-bank-RL-v2-think-r2/fixed26-mt2-4x-20260818) · [evaluation method](results/execution-midband-rl-v2/method/) · [launch configurations](results/execution-midband-rl-v2/launch-configs/) · [W&B run](https://wandb.ai/ahm-rimer/execution-bank-RL-v2-think/runs/execution-bank-RL-v2-think-r2)
 
-The launch command renders a SkyPilot YAML into `.w8-biayn/rendered/`, runs SkyPilot with scoped environment variables from `.gcp-service-account.json`, launches with `sky launch -y --down`, and tears down the cluster after a successful job. It does not run `gcloud auth activate-service-account` or mutate global `gcloud config`.
+Phone Number kernel12 GRPO20 artifacts: [run archive](https://huggingface.co/TokenBender/phone-number-kernel12-GRPO20) · [scored adapter](https://huggingface.co/TokenBender/phone-number-kernel12-GRPO20/tree/main/checkpoints/iter_0000014/adapter) · [training dataset](https://huggingface.co/TokenBender/phone-number-kernel12-GRPO20/blob/main/Phone_Number_train.jsonl) · [evaluation evidence](results/phone-number-kernel12-GRPO20/trials/) · [evaluation method](results/phone-number-kernel12-GRPO20/method/) · [launch configurations](results/phone-number-kernel12-GRPO20/launch-configs/) · [W&B run](https://wandb.ai/models-iit-bhu-news/glm47-phone-number-dnd-grpo/runs/phone-number-kernel12-grpo20-spot-20260822-102653)
 
-Run the real DOMDiff reward-host smoke:
+Generalized C++ kernel GRPO20 artifacts: [run archive](https://huggingface.co/Terrano09/generalized-cpp-kernel-GRPO20) · [scored adapter, iter 14](https://huggingface.co/Terrano09/generalized-cpp-kernel-GRPO20/tree/main/checkpoints/iter_0000014/adapter) · [training dataset](https://huggingface.co/Terrano09/generalized-cpp-kernel-GRPO20/blob/main/Generalized_CPP_GRPO20_train.jsonl) · [evaluation evidence](https://huggingface.co/Terrano09/generalized-cpp-kernel-GRPO20/tree/main/evaluations/iter14-fixed26-mt2-best4-20260902) · [W&B run](https://wandb.ai/himanshu2725pathak-wootzapp/glm47-generalized-cpp-grpo/runs/generalized-cpp-kernel-grpo20-spot-20260829-083214-retry1)
 
-```bash
-uv run w8-biayn domdiff local smoke --image android-world-domdiff:local
-```
+Generalized C++ result boundary: this row uses four selected, receipt-verified `fixed26-contract-v2` trials. It is an assisted regression result, not a random four-trial or pristine held-out benchmark claim; six training task IDs overlap Fixed26.
 
-For R3 development, keep the DOMDiff image local and expose the reward service to the GCP trainer through Cloudflare quick tunnels:
+## Current artifact locations (reference artifacts only)
 
-```bash
-uv run w8-biayn domdiff local up --image android-world-domdiff:local
+The Wootzapp-owned copies below resolve under the existing authenticated HF
+session. They are not new runtime dependencies of this verifier PR. The evaluation
+tables, pinned original URLs, W&B runs and local result archives above retain their
+historical provenance; their reported scores are not results of this candidate tree.
 
-uv run w8-biayn launch r3 \
-  --chromiumrl-url https://<local-domdiff-reward-tunnel> \
-  --benchmark webvoyager-domdiff-heldout \
-  --credentials .gcp-service-account.json
-```
+| Artifact | Repository type | Role |
+|---|---|---|
+| [glm47-synth-v1-dataset](https://huggingface.co/datasets/WootzappLab/glm47-synth-v1-dataset) | dataset | Shared SFT/reference data |
+| [glm47-aider-posttraining-data](https://huggingface.co/datasets/WootzappLab/glm47-aider-posttraining-data) | dataset | Shared post-training catalog |
+| [phone-number-kernel12-GRPO20](https://huggingface.co/WootzappLab/phone-number-kernel12-GRPO20) | model | PEFT artifact; not an HF dataset |
+| [generalized-cpp-kernel-GRPO20](https://huggingface.co/WootzappLab/generalized-cpp-kernel-GRPO20) | model | Generalized C++ PEFT release artifact |
 
-`domdiff local up` prints the reward tunnel URL. Keep that terminal and machine running while the GCP trainer is active. CDP stays bound to the workstation by default; add `--publish-cdp` only for explicit CDP debugging. SkyPilot configs reject local/private DOMDiff URLs such as `localhost`, `127.0.0.1`, `192.168.x.x`, and `.local` names because the remote trainer cannot reach them.
+Repository resolution is not a new model-content, training or evaluation run.
+The reward adapter still consumes explicit local task bindings; no HF fallback
+or training-source change is introduced here.
 
-Run the packaged Harbor DOMDiff R3 smoke with SkyRL on a GCP GPU container:
+## Generalized and targeted C++ verifier layers
 
-```bash
-uv run w8-biayn launch r3 \
-  --with-local-domdiff \
-  --benchmark harbor-domdiff-browser-swe \
-  --credentials .gcp-service-account.json
-```
+In plain language, G01-G07 remain the seven broad verifiers used across C++
+tasks. This change adds one targeted midband layer containing 11 task-specific
+semantic verifiers. Nine cover the original midband set: allergies, bank
+account, circular buffer, complex numbers, D&D character, grade school, perfect
+numbers, space age, and sublist. Clock and yacht were added afterward because
+the September evaluations had low Pass@1 but high MEF on those problems.
 
-This path does not use Daytona, Tinker, Thinking Machines, or a GitHub token. SkyPilot provisions the GCP GPU VM, pulls the Google PyTorch GPU container, mounts the host Docker socket, and runs SkyRL plus the two packaged Harbor task containers on that VM. Each task publishes its preview through a Cloudflare quick tunnel so the laptop-local DOMDiff reward service can evaluate it.
+`generalized_verifier_docs/` contains the seven standalone engines used by
+the generalized verifier policy. They derive task details from CLI inputs;
+they do not contain task-name-specific scoring rules.
 
-If you explicitly want a GCP-hosted DOMDiff reward VM instead, push a local-only image to Google Artifact Registry first and use that registry URI for GCP:
+The GRPO reward runs these engines through the production wrappers under
+`Reward_GRPO/Generalized Cpp Verifiers/verifiers/` and composes their result
+with `Reward_GRPO/generalized_cpp_topic_grpo.py`. The targeted layer covers
+allergies, bank account, circular buffer, clock, complex numbers, D&D character,
+grade school, perfect numbers, space age, sublist, and yacht. Each task has a
+separate behavioral probe under `Reward_GRPO/topic_coverage/probes/`; circular
+buffer also has an auxiliary translation-unit probe.
 
-```bash
-uv run w8-biayn domdiff push-image \
-  --source-image android-world-domdiff:local \
-  --credentials .gcp-service-account.json
+The adapters expect the authenticated task registry, manifests, admission
+evidence, and trusted C++ fixtures to be staged at their existing
+`Reward_GRPO/` paths before building the sandbox image. Those generated or
+run-bound assets are intentionally excluded from this verifier-code review.
 
-uv run w8-biayn domdiff smoke \
-  --credentials .gcp-service-account.json \
-  --local-reward-image android-world-domdiff:local
-```
-
-## GCP Requirements
-
-`.gcp-service-account.json` is local-only and ignored by git. The service account must be able to pass `sky check gcp`.
-
-`w8-biayn` reads that JSON directly and passes it to SkyPilot/GCP tooling through `GOOGLE_APPLICATION_CREDENTIALS`, `CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE`, and `CLOUDSDK_CORE_PROJECT`. Do not pre-authenticate with `gcloud auth`; the CLI is designed to work from a fresh machine with only the service-account JSON present.
-
-At minimum, SkyPilot needs permissions to inspect and use GCP services, create/delete compute instances, networks/firewalls/disks, use service accounts, and create/delete storage buckets. If `doctor --cloud` reports GCP disabled, fix IAM before launching.
-
-SkyPilot launch also prepares the `skypilot-v1` worker service account and its project bindings. `doctor --cloud` explicitly preflights the project-level SkyPilot launch permissions from SkyPilot's GCP backend, including Compute, Storage, Service Usage, IAM service-account creation, `resourcemanager.projects.getIamPolicy`, and `resourcemanager.projects.setIamPolicy`.
-
-Useful commands:
-
-```bash
-uv run w8-biayn doctor --cloud
-uv run w8-biayn doctor --cloud --domdiff
-uv run w8-biayn status
-uv run w8-biayn logs w8-biayn-miniwob
-uv run w8-biayn down w8-biayn-miniwob
-```
-
-## CLI
-
-```bash
-uv run w8-biayn --help
-uv run w8-biayn upstreams clone
-uv run w8-biayn upstreams status
-uv run w8-biayn benchmarks list
-uv run w8-biayn harbor list
-uv run w8-biayn harbor validate
-uv run w8-biayn harbor oracle-smoke --task radix-ui__primitives-3548 --dry-run
-uv run w8-biayn harbor prepare-data --out /tmp/w8-harbor-data --task radix-ui__primitives-3548 --oracle
-uv run w8-biayn data prepare miniwob --out ./data/miniwob
-uv run w8-biayn config render miniwob --credentials .gcp-service-account.json
-uv run w8-biayn config render r3 --benchmark harbor-domdiff-browser-swe
-uv run w8-biayn launch miniwob --dry-run
-uv run w8-biayn domdiff push-image --source-image android-world-domdiff:local --dry-run
-uv run w8-biayn domdiff local up --image android-world-domdiff:local --dry-run
-uv run w8-biayn domdiff local smoke --image android-world-domdiff:local
-uv run w8-biayn domdiff smoke --dry-run
-```
-
-Pinned upstreams are cloned into ignored cache paths:
-
-- rLLM: `.cache/upstreams/rllm`
-- SkyRL: `.cache/upstreams/SkyRL`
-
-Do not vendor either upstream repository into this repo.
-
-## WebArena
-
-WebArena requires official service archives and runtime services. Provide a GCS prefix containing the archives:
-
-```bash
-uv run w8-biayn launch webarena --webarena-archives-gcs gs://<bucket>/webarena
-```
-
-Without `--webarena-archives-gcs` or external `WA_*` URLs, MiniWoB is the supported smoke path.
-
-## R3 Pipeline
-
-The first R3 target is SkyRL routing replay for `moonshotai/Moonlight-16B-A3B-Instruct`.
-SkyRL still owns the trainer and rollout lifecycle; the rendered job enables SkyRL's internal vLLM
-engine in `mp` mode because router replay needs routed-expert metadata from rollout.
-
-```bash
-uv run w8-biayn config render r3 --credentials .gcp-service-account.json
-```
-
-Run R3 against the local DOMDiff reward container through quick tunnels:
-
-```bash
-uv run w8-biayn domdiff local up --image android-world-domdiff:local
-
-uv run w8-biayn launch r3 \
-  --chromiumrl-url https://<local-domdiff-reward-tunnel> \
-  --benchmark webvoyager-domdiff-heldout \
-  --credentials .gcp-service-account.json
-```
-
-Or let `launch` start and tear down the local DOMDiff stack around the SkyPilot run:
-
-```bash
-uv run w8-biayn launch r3 \
-  --with-local-domdiff \
-  --local-domdiff-image android-world-domdiff:local \
-  --benchmark webvoyager-domdiff-heldout \
-  --credentials .gcp-service-account.json
-```
-
-Run the Harbor DOMDiff browser/SWE R3 smoke with self-hosted SkyRL:
-
-```bash
-uv run w8-biayn harbor list
-uv run w8-biayn harbor validate
-
-uv run w8-biayn launch r3 \
-  --with-local-domdiff \
-  --local-domdiff-image android-world-domdiff:local \
-  --benchmark harbor-domdiff-browser-swe \
-  --credentials .gcp-service-account.json
-```
-
-The Harbor smoke uses the two packaged tasks `radix-ui__primitives-3548` and `chakra-ui__chakra-ui-8905` by default. Select a subset with repeated `--harbor-task <task-id>` flags. The default uses packaged oracle patches so infrastructure can be smoked deterministically; pass `--no-harbor-oracle` when you want the model-generated `<solution>...</solution>` script to determine the reward.
-
-The rendered Harbor config is different from the MiniWoB/WebArena SkyRL path. It installs Docker and Cloudflare on the SkyPilot host, clones the pinned SkyRL repository into `$HOME/.cache/w8-biayn/upstreams`, then starts `us-docker.pkg.dev/deeplearning-platform-release/gcr.io/pytorch-cu124.2-4.py310` with GPU access, `--shm-size=32g`, and the host Docker socket mounted. R3 reuses the cached Harbor virtualenv when present and recreates it if incomplete, then runs `uv sync --active --extra megatron --extra gcp` from the SkyRL checkout so SkyRL's own `tool.uv` dependency overrides are honored and installs this repo into the same environment. It renders `trainer.strategy=megatron`, Megatron TP/PP/CP/EP settings, vLLM's `mp` distributed executor backend, vLLM MoE expert parallelism, and `trainer.algorithm.use_kl_loss=false`, matching SkyRL's router replay requirements. Harbor DOMDiff R3 defaults to `H100:8`, matching SkyRL's Moonlight router replay recipe. A100 40GB overrides can reach Harbor rollout and DOMDiff reward scoring, but need CPU optimizer offload for the Megatron optimizer step; the CLI prints a warning and renders offload before paid A100 40GB Harbor R3 launches. The GPU count is rendered from the accelerator request, so the container does not depend on SkyPilot host-only shell variables. Inside that Google GPU container, `w8-biayn harbor prepare-data` writes SkyRL parquet files and `w8_biayn.integrations.skyrl_harbor_main` registers the `harbor-domdiff` SkyRL-Gym environment inside SkyRL's Ray entrypoint before training begins.
-
-Run R3 with a GCP-hosted DOMDiff reward VM only when you want the reward host to live in GCP:
-
-```bash
-uv run w8-biayn launch r3 \
-  --with-domdiff \
-  --benchmark webvoyager-domdiff-heldout \
-  --credentials .gcp-service-account.json
-```
-
-The rendered config enables routed expert capture and MoE routing replay:
-
-- `generator.inference_engine.enable_return_routed_experts=true`
-- `trainer.policy.megatron_config.moe_enable_routing_replay=true`
-- `trainer.ref.megatron_config.moe_enable_routing_replay=true`
-
-## DOMDiff Rewards
-
-`w8-biayn` uses the prebuilt image `ghcr.io/wootzapp/android-world-domdiff:daytona-92000b7` by default. It does not vendor AndroidWorld, WootzApp, or browser source code into this repository.
-
-The fastest development path uses a local Docker image and quick tunnels:
-
-```bash
-uv run w8-biayn doctor --domdiff
-uv run w8-biayn domdiff local up --image android-world-domdiff:local
-uv run w8-biayn domdiff local verify
-uv run w8-biayn domdiff local logs
-uv run w8-biayn domdiff local down
-```
-
-`domdiff local up` starts the local Android/WootzApp container with KVM, starts the ChromiumRL reward service locally on `127.0.0.1:8080`, publishes a Cloudflare quick tunnel for reward HTTP, and writes state/logs under `.w8-biayn/domdiff-local/<run-id>/`. This path does not push Docker layers or copy browser source. Use `--publish-cdp` only when you need a temporary CDP tunnel for debugging. Pass only Cloudflare or otherwise publicly reachable tunnel URLs to remote SkyPilot runs.
-
-For Harbor tasks, the browser preview runs inside a Docker task container on the GCP trainer VM. Each SkyRL trajectory gets a unique task container name so parallel samples cannot remove or overwrite each other's verifier files. The task verifier starts its own Cloudflare quick tunnel for that preview URL and sends the preview URL to the local ChromiumRL reward service through `CHROMIUMRL_API_URL`. This keeps the DOMDiff image local while still allowing GCP task containers and SkyRL to evaluate the same browser state.
-
-The GCP-hosted DOMDiff lifecycle remains available for remote reward hosting. It creates one temporary GCP Compute VM with nested virtualization, starts the prebuilt Android/WootzApp container, copies in only the small `w8_biayn.rewards` adapter, publishes Cloudflare quick tunnels for reward HTTP and CDP, and writes state/logs under `.w8-biayn/domdiff/<run-id>/`.
-
-When the reward image is local-only, use Artifact Registry instead of copying source or saving image tarballs:
-
-```bash
-uv run w8-biayn domdiff push-image \
-  --source-image android-world-domdiff:local \
-  --credentials .gcp-service-account.json
-```
-
-The command creates `us-central1-docker.pkg.dev/<project>/w8-biayn/android-world-domdiff:<tag>` by default, where `<tag>` is `local-<image-id>` unless `--tag` is supplied. `domdiff smoke`, `domdiff up`, and `launch r3 --with-domdiff` also accept `--local-reward-image android-world-domdiff:local`; they push the local image and then pass the Artifact Registry URI to the GCP reward VM. The remote VM logs in to Artifact Registry with `.gcp-service-account.json` before `docker pull`.
-
-Useful commands:
-
-```bash
-uv run w8-biayn domdiff local up --image android-world-domdiff:local
-uv run w8-biayn domdiff local smoke --image android-world-domdiff:local
-uv run w8-biayn launch r3 --with-local-domdiff --benchmark webvoyager-domdiff-heldout
-uv run w8-biayn domdiff push-image --source-image android-world-domdiff:local
-uv run w8-biayn domdiff up
-uv run w8-biayn domdiff verify
-uv run w8-biayn domdiff logs
-uv run w8-biayn domdiff down
-```
-
-The local smoke tears local processes down by default. Use `--keep-running` only when debugging or when the following GCP training run needs the tunnels to stay alive. The GCP-hosted smoke tears the VM down by default; use `--keep` only when debugging and then run `uv run w8-biayn domdiff down --run-id <run-id>`.
-
-## Benchmarks
-
-The pitch needs a scorecard, not just infrastructure. List the current benchmark ladder with:
-
-```bash
-uv run w8-biayn benchmarks list
-```
-
-Recommended order:
-
-- `miniwob-smoke`: cheapest SkyPilot/SkyRL end-to-end check.
-- `domdiff-local-live`: proves local KVM, WootzApp CDP, the reward quick tunnel, and reward service health without pushing the image.
-- `webvoyager-domdiff-heldout`: primary browser-use DOMDiff benchmark for live no-anti-bot web tasks.
-- `harbor-domdiff-browser-swe`: two packaged Harbor browser/SWE preview tasks with definitive DOMDiff rubrics; task containers run on the GCP trainer VM and publish previews back to the laptop-local reward service.
-- `webarena-browsergym`: reproducible self-hosted web benchmark through BrowserGym.
-- `androidworld-transfer`: mobile transfer check for the claim that browser-use RL generalizes to app UI.
-
-## GLM-4.7 C++ post-training
-
-The current Stack-v2 CHARM experiment is a frozen 12-train/7-validation/1-calibration
-GRPO package. Its prompts, native verifier bindings, hidden/public tests, manifests,
-and certification evidence live under `Reward_GRPO/stack_v2_charm_grpo_assets/`.
-There is no SFT stage in this path. SFT-v2 and the shared Wootzapp datasets are
-optional release/reference artifacts, not hidden runtime dependencies.
-
-Install the repository and GRPO launch dependencies from a fresh clone:
-
-```bash
-./scripts/bootstrap.sh
-uv sync --extra dev --extra grpo-launch
-```
-
-The launcher defaults to a check and never starts training unless `--launch` is
-explicit:
-
-```bash
-# Live HF/W&B identity and write-access checks only.
-MILES_WANDB_ENV_FILE=/secure/path/wandb.env \
-  bash launch_stack_v2_charm_grpo.sh --preflight
-
-# Repeat the live checks, validate the frozen task package, and stage a
-# hash-bound launch snapshot under ignored .glm47-posttraining/. No cloud job.
-MILES_WANDB_ENV_FILE=/secure/path/wandb.env \
-  bash launch_stack_v2_charm_grpo.sh --check
-
-# Paid 8×H100 Spot training; run only with explicit authorization.
-MILES_WANDB_ENV_FILE=/secure/path/wandb.env \
-  bash launch_stack_v2_charm_grpo.sh --launch
-```
-
-`WANDB_API_KEY` may be supplied directly instead. The launcher reads the active
-Hugging Face token from `HF_TOKEN`, `HUGGING_FACE_HUB_TOKEN`, an explicit
-`HF_TOKEN_PATH`, or the normal `HF_HOME/token`; it does not contain a
-workstation-specific credential path. Secret values are never copied into the
-frozen snapshot.
-
-The current input/runtime resolution is intentionally not an HF dataset load:
-
-- Data: repository-local, certified CHARM task assets; 12 training rows are built
-  by `glm47_posttraining.integrations.stack_v2_charm_run`.
-- Base model: read-only GCS mount, staged as
-  `/workspace/local-models/GLM-4.7-Flash`, revision marker
-  `7dd20894a642a0aa287e9827cb1a1f7f91386b67`.
-- Reference checkpoint: GCS-backed
-  `GLM-4.7-Flash_torch_dist_tp4_pp1_ep8`.
-- Warm start: the GCS training checkpoint
-  `phone-number-kernel12-grpo20-spot-20260822-102653/.../iter_0000014/adapter`,
-  with adapter SHA-256
-  `62fa190ad26e30fc1b5dd9543936ef549a49dd8cfa8220e4af726a1d499e575a`
-  and four native Megatron shards.
-- Runtime image:
-  `ghcr.io/tokenbender/glm47-runtime@sha256:b4f67ba1519bf276fe1dcb6fcb457600e4a256bc0d5c3011fcbd9cc05f240d43`.
-  This remains a pinned, externally hosted runtime dependency; no Wootzapp-owned
-  replacement has been established.
-- Final HF publication: the existing private model repository
-  `HimanshuPathak/Stackv2grpo`. No Wootzapp replacement ID has been authorized,
-  so the publisher is locked to this exact account/repository and rejects
-  namespace overrides.
-
-Shared Wootzapp HF artifacts, all independently verified during release
-preparation:
-
-| Repository | Type | Runtime role |
+| Policy | Engine | Check |
 | --- | --- | --- |
-| `WootzappLab/glm47-synth-v1-dataset` | dataset | Verified 260-row SFT/reference dataset; not loaded by current GRPO |
-| `WootzappLab/glm47-aider-posttraining-data` | dataset | Post-training dataset catalog; optional, not loaded by current GRPO |
-| `WootzappLab/phone-number-kernel12-GRPO20` | model | PEFT release corresponding to the warm-start lineage; runtime uses the GCS checkpoint because it also needs native shards |
-| `WootzappLab/generalized-cpp-kernel-GRPO20` | model | Generalized C++ PEFT release artifact; not a current training input |
+| G01 | `01_structural_api_gate.py` | API symbols and declaration shape derived from the official test |
+| G02 | `03_two_stage_build_verifier.py` | Candidate compile, test compile, and attributable linker failures |
+| G03 | `04_differential_semantic_verifier.py` | Healthy reference control, official test completion, and diagnostic assertion progress |
+| G04 | `05_response_integrity_verifier.py` | Empty, looping, or truncated model responses |
+| G05 | `06_candidate_boundary_verifier.py` | Whole-file parsing and editable-file boundaries |
+| G06 | `07_warning_hygiene_classifier.py` | Compiler diagnostic classes and repair guidance |
+| G07 | `08_safety_sanitizer_verifier.py` | ASan/UBSan findings without duplicating build or functional penalties |
 
-Local verifier and data checks do not allocate GPUs:
+The standalone engines use Python's standard library. Their C++ checks need
+Linux, a C++17 compiler (`g++` by default, or `$CXX`), a GNU-compatible ELF
+linker supporting `--wrap=main`, and working ASan/UBSan runtimes. These machine
+prerequisites are separate from this verifier PR.
+
+G03 wraps the official test entry point and checks its return through a separate
+completion pipe, together with the process exit and a healthy reference control.
+An early exit or a printed Catch2 success summary alone cannot establish PASS.
+Assertion counts remain untrusted diagnostic/partial-credit data; failed scores
+are never rounded to full correctness. This completion check is not a security
+boundary against arbitrary native code in the same process. Hostile candidate
+execution still needs the worker/container isolation described below.
+
+Every engine supports `--json` and `--receipt DIR`. Receipt hashes bind artifacts
+and identity; they do not authenticate candidate-generated test summaries.
+Compiler/tool invocation failures and runtime launch failures produce INVALID
+with diagnostics. Runtime INVALID requires OS/launcher evidence; candidate-written
+loader or resource-error phrases remain diagnostics and cannot override completed
+failures, crashes, timeouts, or early exits. A broken reference invalidates the
+differential result. Candidate compile/link failures remain separately attributed.
+
+On a G03 timeout, the verifier kills the process group, drains output for at most
+250 ms, then closes the read pipe and allows at most 250 ms to reap the direct
+child. Receipts retain collected output and flags for drain/reap deadline expiry.
+An escaped descendant holding stdout/stderr cannot make cleanup wait for EOF
+indefinitely; containing escaped processes still requires worker isolation.
+
+There are three local validation layers:
 
 ```bash
-PYTHONPATH=src:. python3 -m Reward_GRPO.generalized_cpp_grpo preflight
+python3 -B generalized_verifier_docs/validation/self_check.py
 PYTHONPATH=src:. python3 -B Reward_GRPO/topic_coverage/self_check.py
-PYTHONPATH=src:. python3 -m glm47_posttraining.integrations.stack_v2_charm_run preflight
-PYTHONPATH=src:. python3 -m glm47_posttraining.integrations.stack_v2_charm_run \
-  build-data --tasks-dir Reward_GRPO --out /tmp/stack-v2-charm-data \
-  --curriculum stack-v2-charm-12x30-v1 \
-  --profile stack-v2-charm-12x30-grpo45 --run-id local-check
-uv run python scripts/evaluate.py --help
+PYTHONPATH=src:. python3 -B -m pytest -q -p no:cacheprovider tests/test_generalized_cpp_reward_reliability.py
 ```
 
-The full GPU launch additionally requires access to the three configured GCS
-mounts, the pinned GHCR image, SkyPilot/GCP, the Miles runtime embedded in that
-image, the W&B project, and the private HF publication repository. A successful
-local preflight proves configuration, task/reward integrity, credentials, and
-snapshot completeness; it does not claim that a new optimizer update ran.
+The first runs small synthetic positive/negative controls through G01–G07 and
+checks receipts. It does not validate all benchmark tasks or the staged fixture
+bundle. The second checks the eleven topic definitions, probe inventory and
+fixed reward-family denominators; it does not compile or execute those probes.
+The reliability suite runs synthetic C++ cases and mocked worker/tool failures,
+including cancellation, retries, evidence retention, G03 completion, exact-count
+forgery through wrapper/receipt/aggregation/reward, runtime-text precedence, bounded
+descendant-held pipe cleanup, and G07 schema/runtime agreement. It does not require Docker or launch training.
 
-```mermaid
-flowchart LR
-  operator[Operator] --> launcher[launch_stack_v2_charm_grpo.sh]
-  launcher --> identity[HF and W&B fail-closed preflight]
-  launcher --> freeze[Hash-bound launch snapshot]
-  tasks[Repository-local CHARM assets] --> freeze
-  freeze --> sky[SkyPilot H100 Spot job]
-  gcs_model[GCS base/reference checkpoints] --> sky
-  gcs_warm[GCS Phone Number iter14 adapter] --> sky
-  image[Pinned TokenBender GHCR runtime] --> sky
-  sky --> miles[Miles GLM bridge and GRPO trainer]
-  miles --> reward[Native CHARM reward and held-out evaluation]
-  reward --> gcs_out[GCS checkpoints and receipts]
-  gcs_out --> hf_out[HimanshuPathak/Stackv2grpo]
-```
-
-## Architecture
-
-```mermaid
-flowchart LR
-  user[User / Operator] --> cli[w8-biayn CLI]
-  cli --> doctor[doctor / service-account checks]
-  cli --> sa[.gcp-service-account.json scoped env]
-  cli --> render[SkyPilot YAML renderer]
-  cli --> data[BrowserGym dataset prep]
-  cli --> bench[benchmark scorecard]
-  cli --> harbor[Harbor task commands]
-  cli --> domdiff_local[Local DOMDiff lifecycle]
-  cli --> domdiff_gcp[GCP DOMDiff lifecycle]
-  cli --> gar[Artifact Registry image push]
-  cli --> upstreams[Ignored upstream clones]
-
-  upstreams --> rllm[rLLM pinned source]
-  upstreams --> skyrl[SkyRL pinned source]
-
-  sa --> sky[SkyPilot]
-  render --> sky
-  sky --> gcp[GCP trainer VM]
-  gcp --> setup[Remote trainer setup]
-  setup --> skyrl_remote[SkyRL trainer]
-  setup --> browsergym[BrowserGym envs]
-  setup --> gpu_container[Google GPU Docker container]
-  gpu_container --> skyrl_harbor[w8_biayn SkyRL Harbor Ray entrypoint]
-  skyrl_harbor --> harbor_env[harbor-domdiff SkyRL-Gym env]
-  harbor_env --> task_docker[GCP Harbor task containers]
-  task_docker --> preview_tunnels[Task preview quick tunnels]
-  skyrl_remote --> adapter[w8_biayn BrowserGymEnv]
-  adapter --> browsergym
-  domdiff_local --> local_image[Local android-world-domdiff image]
-  local_image --> local_container[Local Android/WootzApp container]
-  local_container --> local_reward[w8_biayn ChromiumRL service on localhost]
-  local_reward --> tunnels[Cloudflare quick tunnels]
-  preview_tunnels --> local_reward
-  domdiff_gcp --> reward_vm[GCP nested-virt reward VM]
-  gar --> artifact_image[Artifact Registry DOMDiff image]
-  reward_vm --> artifact_image
-  reward_vm --> gcp_reward[w8_biayn reward adapter on VM]
-  gcp_reward --> tunnels
-  tunnels --> skyrl_remote
-  skyrl_remote --> checkpoints[Checkpoints / exports]
-  checkpoints --> gcs[GCS artifact bucket]
-```
-
-## Smoke Workflow
-
-```mermaid
-sequenceDiagram
-  participant U as User
-  participant CLI as w8-biayn
-  participant SA as Service-account JSON
-  participant DO as Local Docker
-  participant CF as Cloudflare Quick Tunnels
-  participant SKY as SkyPilot
-  participant VM as GCP Trainer VM
-  participant RW as Reward Adapter
-  participant SRL as SkyRL
-  participant BG as BrowserGym
-  participant GPU as Google GPU Container
-  participant HT as Harbor Task Container
-
-  U->>CLI: doctor --cloud --domdiff
-  CLI->>SA: read project_id and build scoped credential env
-  CLI->>SKY: sky check gcp with service-account env
-  CLI->>DO: inspect android-world-domdiff:local and /dev/kvm
-  SKY-->>CLI: GCP enabled or IAM blocker
-  U->>CLI: domdiff local up --image android-world-domdiff:local
-  CLI->>DO: run local Android/WootzApp container
-  CLI->>RW: start local reward service with CDP_URL=ws://localhost:9224
-  CLI->>CF: publish reward quick tunnel
-  CF-->>CLI: chromiumrl_url
-  U->>CLI: launch r3 --chromiumrl-url ...
-  CLI->>CLI: render .w8-biayn/rendered/r3.sky.yaml
-  CLI->>SKY: sky launch -y --down
-  SKY->>VM: provision H100:8 VM for Harbor R3, A100:4 for lighter paths
-  VM->>VM: install uv, clone SkyRL, install package
-  VM->>CLI: run w8-biayn data prepare / benchmark setup
-  VM->>SRL: start SkyRL trainer entrypoint
-  SRL->>BG: rollout through BrowserGymEnv
-  SRL->>RW: call DOMDiff reward service when configured
-  BG-->>SRL: observations and rewards
-  RW-->>SRL: DOMDiff reward metrics
-  U->>CLI: launch r3 --benchmark harbor-domdiff-browser-swe --with-local-domdiff
-  CLI->>SKY: sky launch Harbor R3 YAML
-  SKY->>VM: provision GPU VM
-  VM->>GPU: run Google PyTorch GPU container with host Docker socket
-  GPU->>SRL: start skyrl_harbor_main
-  SRL->>HT: run harbor-domdiff env and task Docker container
-  HT->>CF: publish task preview quick tunnel
-  HT->>RW: request DOMDiff score through CHROMIUMRL_API_URL
-  RW-->>SRL: rubric reward
-  SRL-->>VM: logs, checkpoints, exports
-  SKY-->>U: stream logs
-  SKY->>VM: tear down after successful job
-  U->>CLI: domdiff local down
-  CLI->>CF: stop quick tunnels
-  CLI->>DO: stop local container unless --keep-container
-```
-
-## Development
-
-Follow [AGENTS.md](AGENTS.md). Any change that affects setup, cloud behavior, CLI UX, or pipeline flow must update this README, the Mermaid diagrams, and the relevant skills.
-
-Run before handoff:
+Reliability tests require Python 3.10+, the repository's Python dependencies
+(including `pydantic`), `pytest>=8` and `jsonschema>=4.18`. In an isolated Python
+environment, install them with:
 
 ```bash
-uv run --extra dev pytest
-uv run python -m compileall src tests
+uv sync --extra dev
+uv run --extra dev pytest -q
+PYTHONPATH=src:. python3 -B -m pytest -q -p no:cacheprovider tests
+python3 -m compileall src tests
+```
+
+Full fixture verification and combined-reward preflight additionally require the
+externally staged registry, manifests, admission records and fixture bundle,
+with matching digests, plus the verifier Docker environment. Local synthetic
+checks do not establish that these external assets are available or compatible.
+The combined CLI offers worker, image build, data preparation and preflight
+commands. Launch staging is deferred; this PR does not supply training launch
+or CHARM assets.
+
+The default pytest suite uses temporary synthetic bindings and bounded test-only
+reference source strings, not an installed production task pool. Four
+`staged_assets` tests retain release-specific 16-train/4-heldout/admission/D&D
+checks and are visibly **deselected** unless a registry is explicitly supplied:
+
+```bash
+uv run --extra dev pytest -m staged_assets \
+  --staged-verifier-registry /secure/staged/Reward_GRPO/generalized_cpp_grpo_registry.json \
+  --staged-verifier-root /secure/staged
+```
+
+The registry directory must contain the matching manifests, fixtures, admission
+document and mutation controls at their declared relative paths. Receipt paths
+inside the admission document are instead relative to `--staged-verifier-root`
+(for example `/secure/staged/Reward_GRPO/generalized_cpp_grpo_evidence/...`).
+Both options are required for staged tests; no implicit candidate-root fallback
+is used. The test harness redirects the receipt root only during synchronous
+admission validation, retaining all path, SHA-256 and outcome checks. Verifier
+and engine execution still uses this checkout, not code from the staged bundle.
+These test-only bindings do not change production/default CLI resolution:
+`python3 -m Reward_GRPO.generalized_cpp_grpo preflight` still requires the bundle
+at the checkout's original `Reward_GRPO/` paths. Use the staged preflight test
+above when that bundle is external; it calls the same candidate preflight.
+Neither command launches training. Failure to provide those inputs is not
+evidence that production preflight passed. The CPU-only torch dev dependency
+supports the restored BASE
+training-gate tests; no GPU runtime is installed by that dependency.
+
+```mermaid
+flowchart LR
+  sample[Rollout response and task identity] --> bind[Explicit local registry and hash-bound fixtures]
+  bind --> worker[Isolated combined reward worker]
+  worker --> global[G01-G07 engines and receipts]
+  global --> completion[Official-main completion and reference evidence]
+  worker --> topics[Eleven task-specific topic probes]
+  completion --> reward[Authenticated reward projection]
+  topics --> reward
+  checks[Hermetic temporary test bindings] --> global
+  checks --> topics
+```
+
+Each engine also provides `--help` with its task-independent input contract.
+
+## How to reproduce
+
+```bash
+cd results/base-fixed26-20260711/reproduction
+export OPENAI_API_BASE=http://127.0.0.1:8000/v1
+export OPENAI_API_KEY=local-eval
+./run.sh
+```
+
+```bash
+cd results/luna-fixed26-20260805/reproduction
+export OPENROUTER_API_KEY=...
+./run.sh
+```
+
+```bash
+cd results/sft-v5-aiderfmt-1117-4trials/reproduction
+./run.sh
+```
+
+```bash
+cd results/synth-v1-ep50-9.5-mean/reproduction
+./run.sh
+```
+
+```bash
+modal run results/execution-midband-rl-v1/method/aider_eval_app.py --parallel \
+  --adapter-path /runs/issue111-bank-official-grpo20-20260817T151213Z/checkpoints/grpo_lora_r16/iter_0000019/adapter \
+  --expected-adapter-sha256 186b0fc5b200fb8bb55bf85ee4416f2682a470580f0231c6f3f2a4d414bd898e \
+  --expected-data-manifest-sha256 b9c80354d4d05123f8a3768898379ff215251fdf3444e6e0f05d52b02b968299 \
+  --run-id <fresh-fixed26-run-id>
+```
+
+```bash
+sky launch -y -c fixed26-mt2-v2 results/execution-midband-rl-v2/method/skypilot-task.yaml
+```
+
+```bash
+sky jobs launch -y \
+  --env EVAL_RUN_ID=<fresh-fixed26-run-id> \
+  results/phone-number-kernel12-GRPO20/launch-configs/fixed26-eval.yaml
 ```

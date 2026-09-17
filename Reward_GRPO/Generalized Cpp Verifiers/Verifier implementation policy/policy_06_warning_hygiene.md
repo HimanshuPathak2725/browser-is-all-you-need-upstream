@@ -6,7 +6,8 @@ Translate strict-build compiler output into structured, actionable finding class
 
 | Kernel | Question | `+1` | `-1` | `INVALID` |
 |---|---|---|---|---|
-| G06-A | Is the strict stage-1 compile free of error-severity diagnostics? | Clean compile, zero error diagnostics | One or more diagnostics, each classified with a fix hint | Build engine unavailable |
+| G06-1 | Does the candidate compile under strict flags? | Compile exit 0 | Candidate compile failure | Compiler/tool infrastructure failure |
+| G06-2 | Are classified diagnostics free of errors? | Classifier PASS | Classified error findings | Classifier unavailable or invalid report |
 
 ## Shared method
 
@@ -14,12 +15,20 @@ The stage-1 compile is run and its diagnostics parsed into classes: unused-param
 
 ## Aggregation
 
-Single-kernel policy; the class distribution is reported in facts. Warning-free-but-failing builds are distinguished from warning-driven failures.
+Two diagnostic kernels report compile status and classified hygiene separately; class distribution remains in facts. Tool failures are INVALID, not hygiene penalties. Warning-free-but-failing builds are distinguished from warning-driven failures.
 
 ## Execution
 
 `python verifier_06_warning_hygiene.py --candidate-dir TASK --manifest MANIFEST --expected-manifest-sha256 DIGEST --output-dir OUT`
 
-## Evidence
+## Evidence boundary
 
-`generalized_verifier_docs/validation/VALIDATION_07.md` (16/16 recorded cases classified correctly across 9 tasks; known-good builds pass with zero false positives).
+The previous release cited the following historical evidence (not bundled or
+revalidated by this focused PR):
+
+> `generalized_verifier_docs/validation/VALIDATION_07.md` (16/16 recorded cases classified correctly across 9 tasks; known-good builds pass with zero false positives).
+
+For current implementation checks, run the repository's hermetic
+`generalized_verifier_docs/validation/self_check.py` and
+`tests/test_generalized_cpp_reward_reliability.py`. Synthetic local checks do not
+establish those historical counts or full benchmark/task coverage.

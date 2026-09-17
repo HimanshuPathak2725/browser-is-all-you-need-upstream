@@ -15,12 +15,20 @@ Stage 1 compiles the candidate translation unit alone (`g++ -std=c++17 -Wall -We
 
 ## Aggregation
 
-Two kernels; each stage independent. A single-stage build previously lumped both failure kinds into one opaque compile error; the split keeps the learning signal attributable.
+Two kernels preserve build-stage attribution. Compiler invocation/toolchain failures and broken trusted harness inputs are INVALID, with stdout/stderr diagnostics retained; candidate CE/LE remains failure. Structured engine exit 2 is not collapsed into candidate failure. A single-stage build previously lumped both failure kinds into one opaque compile error; the split keeps the learning signal attributable.
 
 ## Execution
 
 `python verifier_02_two_stage_build.py --candidate-dir TASK --manifest MANIFEST --expected-manifest-sha256 DIGEST --output-dir OUT`
 
-## Evidence
+## Evidence boundary
 
-`generalized_verifier_docs/validation/VALIDATION.md` (CE vs LE separation on recorded cases; reference passes both stages).
+The previous release cited the following historical evidence (not bundled or
+revalidated by this focused PR):
+
+> `generalized_verifier_docs/validation/VALIDATION.md` (CE vs LE separation on recorded cases; reference passes both stages).
+
+For current implementation checks, run the repository's hermetic
+`generalized_verifier_docs/validation/self_check.py` and
+`tests/test_generalized_cpp_reward_reliability.py`. Synthetic local checks do not
+establish those historical counts or full benchmark/task coverage.

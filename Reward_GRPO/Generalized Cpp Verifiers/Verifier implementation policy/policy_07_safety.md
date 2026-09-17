@@ -38,6 +38,14 @@ One kernel, diagnostic (`kernel: 0`). Engine exit-code ownership: nonzero only f
 
 `python verifier_07_safety.py --candidate-dir TASK --manifest MANIFEST --expected-manifest-sha256 DIGEST --output-dir OUT`
 
-## Evidence
+## Evidence boundary
 
-`generalized_verifier_docs/validation/VALIDATION_08.md` (3 recorded crashes classified with kind + location; 5 reference implementations CLEAN; suppression-attempt INVALID; recorded wrong-logic candidate CLEAN with the functional failure attributed to G03).
+The previous release cited the following historical evidence (not bundled or
+revalidated by this focused PR):
+
+> `generalized_verifier_docs/validation/VALIDATION_08.md` (3 recorded crashes classified with kind + location; 5 reference implementations CLEAN; suppression-attempt INVALID; recorded wrong-logic candidate CLEAN with the functional failure attributed to G03).
+
+For current implementation checks, run the repository's hermetic
+`generalized_verifier_docs/validation/self_check.py` and
+`tests/test_generalized_cpp_reward_reliability.py`. Synthetic local checks do not
+establish those historical counts or full benchmark/task coverage.

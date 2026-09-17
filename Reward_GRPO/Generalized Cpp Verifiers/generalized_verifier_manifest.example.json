@@ -12,7 +12,8 @@
     "G03": [{"command": ["./trusted-official-suite"], "timeout_s": 120, "expected_exit": 0}],
     "G04": [{"command": ["./trusted-response-probe"], "timeout_s": 120, "expected_exit": 0}],
     "G05": [{"command": ["./trusted-boundary-probe"], "timeout_s": 120, "expected_exit": 0}],
-    "G06": [{"command": ["./trusted-hygiene-probe"], "timeout_s": 120, "expected_exit": 0}]
+    "G06": [{"command": ["./trusted-hygiene-probe"], "timeout_s": 120, "expected_exit": 0}],
+    "G07": []
   },
   "trajectory": {
     "turn_limit": 2,

@@ -1,5 +1,0 @@
-#include "address-token-matcher.h"
-#include <algorithm>
-#include <cctype>
-#include <stdexcept>
-namespace address_tokens {static std::string lower(std::string s){for(char& c:s)c=static_cast<char>(std::tolower(static_cast<unsigned char>(c)));return s;}static void validate(const Token& t){if(t.text.empty())throw std::invalid_argument("token");if(t.kind==Kind::number&&!std::all_of(t.text.begin(),t.text.end(),[](unsigned char c){return std::isdigit(c);}))throw std::invalid_argument("number");}static bool fits(const std::vector<Token>& q,const std::vector<Token>& c){std::size_t at=0,last=0;bool have=false;for(std::size_t i=0;i<q.size();++i){bool found=false;for(;at<c.size();++at)if(q[i].kind==c[at].kind&&lower(q[i].text)==lower(c[at].text)){if(have&&(q[i].kind==Kind::number||q[i-1].kind==Kind::number)&&at!=last+1)return false;last=at++;have=true;found=true;break;}if(!found)return false;}return true;}std::vector<std::string> match(const std::vector<Token>& q,const std::vector<Candidate>& cs){for(const auto& t:q)validate(t);std::vector<std::string> out;for(const auto& c:cs){for(const auto& t:c.tokens)validate(t);if(fits(q,c.tokens))out.push_back(c.id);}return out;}}

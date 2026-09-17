@@ -1,11 +1,13 @@
 """Behavioral controls for requirement groups not isolated by the original catalog.
 
-Also runnable inside the offline reward image without pytest:
-python test_topic_coverage_edges.py --output /audit/edges
+Pytest uses explicit temporary source bindings, not a production registry.
+The standalone command requires --registry;
+its inputs must be staged explicitly by the caller.
 """
 from pathlib import Path
 import argparse
 import json
+from test_topic_coverage import topic_registry  # Explicit pytest-local bindings.
 from Reward_GRPO.generalized_cpp_grpo import _registry
 from Reward_GRPO.topic_coverage.runner import AuditSession, control_sources, write_json
 from Reward_GRPO.topic_coverage.controls import controls, edit
@@ -27,6 +29,17 @@ def edge_controls():
         ('subtract_adds_imaginary','Complex diff{re - other.re, im - other.im};','Complex diff{re - other.re, im + other.im};','direct_subtract'),
         ('multiply_wrong_sign','a * c - b * d','a * c + b * d','direct_multiply'),
         ('divide_wrong_real','(a * c + b * d)','(a * c - b * d)','direct_divide')]:
+        # The historical reference uses member expressions; the later release
+        # uses local a/b/c/d variables. Both controls make the same sign error.
+        # edit() still requires exactly one matching anchor and changes it once.
+        historical = {
+            'a * c - b * d': ('re * other.re - im * other.im',
+                              're * other.re + im * other.im'),
+            '(a * c + b * d)': ('(re * other.re + im * other.im)',
+                                '(re * other.re - im * other.im)'),
+        }
+        if old in historical and sources['complex_numbers.cpp'].count(old) == 0:
+            old, new = historical[old]
         add(task,name,edit(sources,'complex_numbers.cpp',old,new),(group,))
     old='Complex prod{complex.real() * scalar, complex.imag() * scalar};'
     assert sources['complex_numbers.cpp'].count(old)==2
@@ -84,4 +97,9 @@ def test_remaining_requirement_groups_and_valid_api_alternatives(tmp_path):
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--output',type=Path,required=True)
-    validate(parser.parse_args().output)
+    parser.add_argument('--registry',type=Path,required=True)
+    args = parser.parse_args()
+    import os
+    os.environ['GENERALIZED_CPP_VERIFIER_REGISTRY'] = str(args.registry.resolve())
+    AuditSession.__init__.__kwdefaults__['registry_path'] = args.registry.resolve()
+    validate(args.output)

@@ -70,30 +70,16 @@ def _run_runner(
 
 
 def test_clean_checkout_self_check_is_hermetic(tmp_path: Path) -> None:
-    json_out = tmp_path / "results.json"
+    work = tmp_path / "self-check"
     completed = subprocess.run(
-        [
-            sys.executable,
-            str(SELF_CHECK),
-            "--receipt-dir",
-            str(tmp_path / "receipts"),
-            "--gen-dir",
-            str(tmp_path / "generated"),
-            "--report",
-            str(tmp_path / "report.md"),
-            "--json-out",
-            str(json_out),
-        ],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
+        [sys.executable, str(SELF_CHECK), "--work-dir", str(work)],
+        cwd=ROOT, text=True, capture_output=True, check=False,
     )
-    results = json.loads(json_out.read_text())
     assert completed.returncode == 0, completed.stdout + completed.stderr
-    assert results["all_ok"] is True
-    assert len(results["cases"]) == 21
-    assert all(case["ok"] for case in results["cases"])
+    assert "controls passed" in completed.stdout
+    receipts = list((work / "receipts").glob("*/*_kernel_receipt.json"))
+    assert len(receipts) == 16  # Fourteen original controls plus two ported regressions.
+    assert all(json.loads(p.read_text())["verifier_source_sha256"] for p in receipts)
 
 
 def test_full_runner_executes_all_seven_policies(tmp_path: Path) -> None:
@@ -279,6 +265,20 @@ def test_receipt_to_reward_is_candidate_owned_and_correctness_weighted() -> None
             _policy("G04", [1]), _policy("G05", [1]),
         ],
     }
+    # Aggregate labels alone never authenticate success.
+    assert generalized_cpp_grpo.receipt_to_reward(full_pass)[1] is True
+    run = {"verified_pass": True, "execution_completed": True,
+           "returncode": 0, "harness_returncode": 0, "crashed": False,
+           "timed_out": False, "infrastructure_error": False}
+    for policy in full_pass["policy_results"]:
+        policy["status"] = "pass"
+        for kernel in policy["kernels"]:
+            kernel["status"] = "pass"
+    full_pass["policy_results"][2]["kernels"][1]["facts"] = {
+        "engine_exit_code": 0,
+        "reference": {"status": "OK", "run": dict(run)},
+        "candidate": {"status": "RAN", "run": dict(run)},
+    }
     assert generalized_cpp_grpo.receipt_to_reward(full_pass)[0] == 1.0
     all_candidate_gates_pass_but_status_fails = {**full_pass, "status": "fail"}
     assert generalized_cpp_grpo.receipt_to_reward(
@@ -289,7 +289,7 @@ def test_receipt_to_reward_is_candidate_owned_and_correctness_weighted() -> None
 
 
 def _semantic_receipt(passed: int, total: int, reported: object | None = None) -> dict:
-    score = round(passed / total, 4) if reported is None else reported
+    score = passed / total if reported is None else reported
     return {
         "status": "fail",
         "policy_results": [
@@ -312,6 +312,9 @@ def _semantic_receipt(passed: int, total: int, reported: object | None = None) -
                                     "total_assertions": total,
                                     "score": score,
                                     "crashed": False,
+                                    "execution_completed": True,
+                                    "infrastructure_error": False,
+                                    "timed_out": False,
                                 },
                             },
                         },

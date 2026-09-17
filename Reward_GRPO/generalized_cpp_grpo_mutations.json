@@ -43,13 +43,6 @@
         "replace": "!isspace(c)"
       }
     },
-    "diamond": {
-      "semantic": {
-        "file": "diamond.cpp",
-        "find": "int outer_spacing = middle_letter - c;",
-        "replace": "int outer_spacing = middle_letter - c + 1;"
-      }
-    },
     "dnd-character": {
       "semantic": {
         "file": "dnd_character.cpp",
