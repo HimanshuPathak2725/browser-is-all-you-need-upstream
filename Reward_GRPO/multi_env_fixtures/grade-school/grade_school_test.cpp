@@ -97,4 +97,21 @@ TEST_CASE("checking_a_grade_should_not_change_the_roster")
     REQUIRE(school_.roster().empty());
 }
 
+TEST_CASE("repeated student in same grade preserves roster") {
+    grade_school::school school_;
+    school_.add("Aimee", 2);
+    const auto before = school_.roster();
+    // The void API does not specify an exception type or rejection channel.
+    try { school_.add("Aimee", 2); } catch (...) {}
+    REQUIRE(school_.roster() == before);
+}
+
+TEST_CASE("repeated student in another grade preserves roster") {
+    grade_school::school school_;
+    school_.add("Aimee", 2);
+    const auto before = school_.roster();
+    try { school_.add("Aimee", 3); } catch (...) {}
+    REQUIRE(school_.roster() == before);
+}
+
 #endif

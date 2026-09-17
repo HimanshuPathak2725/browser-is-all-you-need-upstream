@@ -21,3 +21,26 @@ artifacts/
 outputs/
 checkpoints/
 *.parquet
+
+# Local post-training snapshots, authoring workspaces, and migration evidence.
+# The distributable runtime assets live under Reward_GRPO/ instead.
+.glm47-posttraining/
+results/
+stack_v2_cpp_candidates_v001/
+stack_v2_cpp_charm_v002/
+stack_v2_charm_grpo_integration/
+_source_*/
+_destination_*/
+_remote_*/
+_publish_*/
+_pre_rewrite_*/
+_post_rewrite_*/
+*.git/
+GRPO_REPORT_*.md
+compilation.txt
+sft_pipeline_analysis.txt
+how --stat --oneline *
+Reward_GRPO/STACK_V2_CHARM_*.md
+generalized_verifier_docs/validation/SELF_CHECK.md
+generalized_verifier_docs/validation/self_check_generated/
+generalized_verifier_docs/validation/self_check_receipts/

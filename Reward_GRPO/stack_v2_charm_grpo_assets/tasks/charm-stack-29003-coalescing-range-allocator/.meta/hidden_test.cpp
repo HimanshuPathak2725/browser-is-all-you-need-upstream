@@ -1,0 +1,4 @@
+#include "coalescing-range-allocator.h"
+#include "test_support.h"
+#include <stdexcept>
+int main(){using namespace range_allocator;Allocator z(0);CHECK(!z.allocate(1,1));CHECK_THROWS(std::invalid_argument,z.allocate(0,1));CHECK_THROWS(std::invalid_argument,z.allocate(1,3));Allocator a(30);auto p=a.allocate(10,1),q=a.allocate(1,1),r=a.allocate(5,1),s=a.allocate(1,1);CHECK(p&&q&&r&&s);a.release(p->id);a.release(r->id);auto best=a.allocate(4,1);CHECK(best&&best->offset==11);a.release(q->id);a.release(s->id);a.release(best->id);CHECK(a.free_ranges()==std::vector<Range>({{0,30}}));Allocator b(20);auto x=b.allocate(3,1),y=b.allocate(5,1);b.release(x->id);auto aligned=b.allocate(4,8);CHECK(aligned&&aligned->offset==8);CHECK(b.free_ranges()==std::vector<Range>({{0,3},{12,8}}));CHECK_THROWS(std::invalid_argument,b.release(999));b.release(y->id);CHECK_THROWS(std::invalid_argument,b.release(y->id));return charm_failures?1:0;}

@@ -25,7 +25,7 @@ Completed on May 17, 2026 against `harbor-domdiff-browser-swe` with SkyRL R3 on 
 
 Task IDs: `radix-ui__primitives-3548`, `chakra-ui__chakra-ui-8905`. This is an oracle-mode paid infrastructure smoke: it verifies the GCP/SkyPilot/SkyRL/Harbor/DOMDiff pipeline end to end, not a held-out competition leaderboard score.
 
-`browser-is-all-you-need` provides `w8-biayn`, a command-and-control CLI for BrowserGym reinforcement-learning smoke runs on rLLM, SkyRL, SkyPilot, and Google Cloud.
+`browser-is-all-you-need` provides `w8-biayn`, a command-and-control CLI for BrowserGym reinforcement-learning smoke runs on rLLM, SkyRL, SkyPilot, and Google Cloud. The repository also carries the isolated GLM-4.7 C++ GRPO launch, evaluation, reward, and frozen task packages described below.
 
 The current implementation supports MiniWoB smoke runs, WebArena config rendering, DOMDiff reward hosting, and a Harbor DOMDiff browser/SWE R3 smoke that runs task containers on GCP while using the local DOMDiff image through a Cloudflare reward tunnel.
 
@@ -273,6 +273,113 @@ Recommended order:
 - `harbor-domdiff-browser-swe`: two packaged Harbor browser/SWE preview tasks with definitive DOMDiff rubrics; task containers run on the GCP trainer VM and publish previews back to the laptop-local reward service.
 - `webarena-browsergym`: reproducible self-hosted web benchmark through BrowserGym.
 - `androidworld-transfer`: mobile transfer check for the claim that browser-use RL generalizes to app UI.
+
+## GLM-4.7 C++ post-training
+
+The current Stack-v2 CHARM experiment is a frozen 12-train/7-validation/1-calibration
+GRPO package. Its prompts, native verifier bindings, hidden/public tests, manifests,
+and certification evidence live under `Reward_GRPO/stack_v2_charm_grpo_assets/`.
+There is no SFT stage in this path. SFT-v2 and the shared Wootzapp datasets are
+optional release/reference artifacts, not hidden runtime dependencies.
+
+Install the repository and GRPO launch dependencies from a fresh clone:
+
+```bash
+./scripts/bootstrap.sh
+uv sync --extra dev --extra grpo-launch
+```
+
+The launcher defaults to a check and never starts training unless `--launch` is
+explicit:
+
+```bash
+# Live HF/W&B identity and write-access checks only.
+MILES_WANDB_ENV_FILE=/secure/path/wandb.env \
+  bash launch_stack_v2_charm_grpo.sh --preflight
+
+# Repeat the live checks, validate the frozen task package, and stage a
+# hash-bound launch snapshot under ignored .glm47-posttraining/. No cloud job.
+MILES_WANDB_ENV_FILE=/secure/path/wandb.env \
+  bash launch_stack_v2_charm_grpo.sh --check
+
+# Paid 8×H100 Spot training; run only with explicit authorization.
+MILES_WANDB_ENV_FILE=/secure/path/wandb.env \
+  bash launch_stack_v2_charm_grpo.sh --launch
+```
+
+`WANDB_API_KEY` may be supplied directly instead. The launcher reads the active
+Hugging Face token from `HF_TOKEN`, `HUGGING_FACE_HUB_TOKEN`, an explicit
+`HF_TOKEN_PATH`, or the normal `HF_HOME/token`; it does not contain a
+workstation-specific credential path. Secret values are never copied into the
+frozen snapshot.
+
+The current input/runtime resolution is intentionally not an HF dataset load:
+
+- Data: repository-local, certified CHARM task assets; 12 training rows are built
+  by `glm47_posttraining.integrations.stack_v2_charm_run`.
+- Base model: read-only GCS mount, staged as
+  `/workspace/local-models/GLM-4.7-Flash`, revision marker
+  `7dd20894a642a0aa287e9827cb1a1f7f91386b67`.
+- Reference checkpoint: GCS-backed
+  `GLM-4.7-Flash_torch_dist_tp4_pp1_ep8`.
+- Warm start: the GCS training checkpoint
+  `phone-number-kernel12-grpo20-spot-20260822-102653/.../iter_0000014/adapter`,
+  with adapter SHA-256
+  `62fa190ad26e30fc1b5dd9543936ef549a49dd8cfa8220e4af726a1d499e575a`
+  and four native Megatron shards.
+- Runtime image:
+  `ghcr.io/tokenbender/glm47-runtime@sha256:b4f67ba1519bf276fe1dcb6fcb457600e4a256bc0d5c3011fcbd9cc05f240d43`.
+  This remains a pinned, externally hosted runtime dependency; no Wootzapp-owned
+  replacement has been established.
+- Final HF publication: the existing private model repository
+  `HimanshuPathak/Stackv2grpo`. No Wootzapp replacement ID has been authorized,
+  so the publisher is locked to this exact account/repository and rejects
+  namespace overrides.
+
+Shared Wootzapp HF artifacts, all independently verified during release
+preparation:
+
+| Repository | Type | Runtime role |
+| --- | --- | --- |
+| `WootzappLab/glm47-synth-v1-dataset` | dataset | Verified 260-row SFT/reference dataset; not loaded by current GRPO |
+| `WootzappLab/glm47-aider-posttraining-data` | dataset | Post-training dataset catalog; optional, not loaded by current GRPO |
+| `WootzappLab/phone-number-kernel12-GRPO20` | model | PEFT release corresponding to the warm-start lineage; runtime uses the GCS checkpoint because it also needs native shards |
+| `WootzappLab/generalized-cpp-kernel-GRPO20` | model | Generalized C++ PEFT release artifact; not a current training input |
+
+Local verifier and data checks do not allocate GPUs:
+
+```bash
+PYTHONPATH=src:. python3 -m Reward_GRPO.generalized_cpp_grpo preflight
+PYTHONPATH=src:. python3 -B Reward_GRPO/topic_coverage/self_check.py
+PYTHONPATH=src:. python3 -m glm47_posttraining.integrations.stack_v2_charm_run preflight
+PYTHONPATH=src:. python3 -m glm47_posttraining.integrations.stack_v2_charm_run \
+  build-data --tasks-dir Reward_GRPO --out /tmp/stack-v2-charm-data \
+  --curriculum stack-v2-charm-12x30-v1 \
+  --profile stack-v2-charm-12x30-grpo45 --run-id local-check
+uv run python scripts/evaluate.py --help
+```
+
+The full GPU launch additionally requires access to the three configured GCS
+mounts, the pinned GHCR image, SkyPilot/GCP, the Miles runtime embedded in that
+image, the W&B project, and the private HF publication repository. A successful
+local preflight proves configuration, task/reward integrity, credentials, and
+snapshot completeness; it does not claim that a new optimizer update ran.
+
+```mermaid
+flowchart LR
+  operator[Operator] --> launcher[launch_stack_v2_charm_grpo.sh]
+  launcher --> identity[HF and W&B fail-closed preflight]
+  launcher --> freeze[Hash-bound launch snapshot]
+  tasks[Repository-local CHARM assets] --> freeze
+  freeze --> sky[SkyPilot H100 Spot job]
+  gcs_model[GCS base/reference checkpoints] --> sky
+  gcs_warm[GCS Phone Number iter14 adapter] --> sky
+  image[Pinned TokenBender GHCR runtime] --> sky
+  sky --> miles[Miles GLM bridge and GRPO trainer]
+  miles --> reward[Native CHARM reward and held-out evaluation]
+  reward --> gcs_out[GCS checkpoints and receipts]
+  gcs_out --> hf_out[HimanshuPathak/Stackv2grpo]
+```
 
 ## Architecture
 

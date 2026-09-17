@@ -1,0 +1,57 @@
+{
+  "action_topology": "source_only",
+  "api_capabilities": [
+    "implement_missing_api",
+    "preserve_api",
+    "extend_api",
+    "repair_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "grid-neighbor-topology.cpp"
+  ],
+  "editable_layout": "cpp_only",
+  "family": "spatial-graph",
+  "header_mode": "frozen",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "cdad082ebc918dfd4924ea812c2faefeb44dd713af434044f9f43fc8e167fe76",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "class grid_topology::Grid",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "702bd7404ba15d2b61f357a40b9d8ecc53d2c266a33317ad04066fe1851af687",
+  "starter_type": "partial_implementation",
+  "task_id": "charm-stack-29003-grid-neighbor-topology",
+  "task_role": "direct_verified_success",
+  "title": "Grid Neighbor Topology"
+}

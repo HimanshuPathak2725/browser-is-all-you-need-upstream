@@ -10,7 +10,16 @@ int modifier(int score) {
     return std::floor((static_cast<double>(score) - 10) / 2);
 }
 
-int dice_roll() { return 1 + std::rand() / ((RAND_MAX + 1u) / 6); }
+int dice_roll() {
+    // Reject the incomplete bucket in rand()'s inclusive range.
+    constexpr auto bucket_size = (static_cast<unsigned long long>(RAND_MAX) + 1) / 6;
+    constexpr auto limit = bucket_size * 6;
+    unsigned long long draw;
+    do {
+        draw = static_cast<unsigned long long>(std::rand());
+    } while (draw >= limit);
+    return 1 + static_cast<int>(draw / bucket_size);
+}
 
 int ability() {
     auto rolls = {dice_roll(), dice_roll(), dice_roll(), dice_roll()};

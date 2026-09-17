@@ -1,0 +1,57 @@
+{
+  "action_topology": "source_only",
+  "api_capabilities": [
+    "implement_missing_api",
+    "extend_api",
+    "repair_api",
+    "refactor_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "partial-tree-proof.cpp"
+  ],
+  "editable_layout": "cpp_only",
+  "family": "numerical-integrity",
+  "header_mode": "reconstructed",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "dc521c1b5e606890a5da0875fcf4b99da034902695d965009da47e00af565e10",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "partial_tree::build and partial_tree::verify",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "c7b32aafc2e88936e6be6b0f570bc8b24e2019021e49cd178144793ea870dbce",
+  "starter_type": "empty",
+  "task_id": "charm-stack-29003-partial-tree-proof",
+  "task_role": "direct_verified_success",
+  "title": "Partial Tree Proof"
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -186,7 +187,7 @@ def test_heldout_monitor_is_disjoint_and_starters_are_semantic_negatives() -> No
     heldout_ids = set(adapter._validation_task_ids(registry))
     samples = adapter._heldout_negative_samples(registry)
 
-    assert len(train_ids) == 15
+    assert len(train_ids) == 16
     assert len(heldout_ids) == 4
     assert train_ids.isdisjoint(heldout_ids)
     assert {sample["metadata"]["problem_id"] for sample in samples} == heldout_ids
@@ -226,6 +227,41 @@ def test_midband_admission_is_recomputed_from_bound_receipts(
 def test_preflight_runs_registered_canary(capsys: pytest.CaptureFixture[str]) -> None:
     adapter.preflight()
     output = capsys.readouterr().out
-    assert "GENERALIZED_CPP_MUTATION_CONTROLS_READY tasks=15 cases=90" in output
+    assert "GENERALIZED_CPP_MUTATION_CONTROLS_READY tasks=16 cases=96" in output
     assert "GENERALIZED_CPP_HELDOUT_MONITOR_READY tasks=4 starter_controls=4" in output
     assert "GENERALIZED_CPP_GRPO_READY" in output
+
+
+def test_dnd_reference_keeps_maximum_rand_draws_within_ability_range(tmp_path: Path) -> None:
+    """Reference-only fault injection; candidates may use any legitimate RNG."""
+    compiler = shutil.which("g++")
+    if compiler is None:
+        pytest.skip("g++ is required for the D&D reference boundary regression")
+    fixture = ROOT / "Reward_GRPO/multi_env_fixtures/dnd-character"
+    for suffix in ("h", "cpp"):
+        shutil.copyfile(fixture / ".meta" / f"example.{suffix}",
+                        tmp_path / f"dnd_character.{suffix}")
+    driver = tmp_path / "reference_boundary.cpp"
+    driver.write_text(
+        '#include "dnd_character.h"\n'
+        '#include <cstdlib>\n'
+        'extern "C" int __wrap_rand() {\n'
+        '    static int draws = 0;\n'
+        '    return draws++ < 4 ? RAND_MAX : 0;\n'
+        '}\n'
+        'int main() {\n'
+        '    const int result = dnd_character::ability();\n'
+        '    return result >= 3 && result <= 18 ? 0 : 1;\n'
+        '}\n',
+        encoding="utf-8",
+    )
+    executable = tmp_path / "reference_boundary"
+    build = subprocess.run(
+        [compiler, "-std=c++17", "-Wall", "-Wextra", "-Wpedantic", "-Werror",
+         str(driver), str(tmp_path / "dnd_character.cpp"), "-Wl,--wrap=rand",
+         "-o", str(executable)],
+        capture_output=True, text=True, timeout=60,
+    )
+    assert build.returncode == 0, build.stderr
+    run = subprocess.run([str(executable)], capture_output=True, text=True, timeout=5)
+    assert run.returncode == 0, run.stdout + run.stderr

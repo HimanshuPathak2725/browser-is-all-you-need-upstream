@@ -1,0 +1,31 @@
+{
+  "candidate_files": [
+    "linked_list.cpp",
+    "linked_list.h"
+  ],
+  "fixture_dir": "multi_env_fixtures/linked-list",
+  "policies": {
+    "G02": [],
+    "G03": [],
+    "G04": [],
+    "G05": [],
+    "G06": [],
+    "G07": []
+  },
+  "protected_files": {
+    ".docs/instructions.md": "9b53497f95e577e867b4045009a6c42d5d480e1c00a9878a367dc5e1598a2cf6",
+    ".meta/config.json": "b191104a611c81f95e6f09b79eebcd8f345807a2b001f52c51273f90c8dfb4b0",
+    ".meta/example.cpp": "177a389c4d9adaeeba281bfe3fa7265b8aee4ce9576246a0b29d8063e88ba7f6",
+    ".meta/example.h": "134969bac4b712f9190a1a57a12dfa3c7bff367450c09528c109df651d0277ee",
+    ".meta/tests.toml": "dd19653a9b915d68ac6c9c3e33b7f5179d898d0589a5e5c46421a3e25e7535cd",
+    "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",
+    "linked_list.cpp": "c2a1037879464329f7393e7e65d3b244c9a793ad9245678838043faf1ce485c0",
+    "linked_list.h": "72185b2a2e6f1e684ed83fdf4d608150b8d66938aae051afcf473d443324494f",
+    "linked_list_test.cpp": "759b8fa6ea6f4f539f5ca439e6d99dc000e1a482feac3c9b1bf48e9f0d9b78ff",
+    "test/catch.hpp": "681e7505a50887c9085539e5135794fc8f66d8e5de28eadf13a30978627b0f47",
+    "test/tests-main.cpp": "5847fda35c1320d94f8d088aaf34229d689f66f1da235f885cbb28c8f17e4260"
+  },
+  "schema_version": 1,
+  "source": "official:Aider-AI/polyglot-benchmark@7e0611e77b54e2dea774cdc0aa00cf9f7ed6144f/cpp/exercises/practice/linked-list",
+  "task_id": "linked-list"
+}

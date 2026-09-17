@@ -1,7 +1,19 @@
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
 #include "complex_numbers.h"
+
+namespace {
+// Normalize finite components without squaring their original magnitude.
+int normalize(double& real, double& imaginary) {
+    int exponent = 0;
+    std::frexp(std::max(std::abs(real), std::abs(imaginary)), &exponent);
+    real = std::scalbn(real, -exponent);
+    imaginary = std::scalbn(imaginary, -exponent);
+    return exponent;
+}
+}  // namespace
 
 namespace complex_numbers {
 
@@ -18,19 +30,21 @@ Complex Complex::operator-(const Complex& other) const {
 }
 
 Complex Complex::operator*(const Complex& other) const {
-    Complex prod{re * other.re - im * other.im, im * other.re + re * other.im};
-    return prod;
+    double a = re, b = im, c = other.re, d = other.im;
+    const int exponent = normalize(a, b) + normalize(c, d);
+    return Complex{std::scalbn(a * c - b * d, exponent),
+                   std::scalbn(b * c + a * d, exponent)};
 }
 
 Complex Complex::operator/(const Complex& other) const {
-    Complex quot{(re * other.re + im * other.im) /
-                     (other.re * other.re + other.im * other.im),
-                 (im * other.re - re * other.im) /
-                     (other.re * other.re + other.im * other.im)};
-    return quot;
+    double a = re, b = im, c = other.re, d = other.im;
+    const int exponent = normalize(a, b) - normalize(c, d);
+    const double denominator = c * c + d * d;
+    return Complex{std::scalbn((a * c + b * d) / denominator, exponent),
+                   std::scalbn((b * c - a * d) / denominator, exponent)};
 }
 
-double Complex::abs() const { return sqrt(re * re + im * im); }
+double Complex::abs() const { return std::hypot(re, im); }
 
 Complex Complex::conj() const {
     Complex cx{re, -im};
@@ -42,6 +56,12 @@ double Complex::real() const { return re; }
 double Complex::imag() const { return im; }
 
 Complex Complex::exp() const {
+    if (re > std::log(std::numeric_limits<double>::max())) {
+        // Each component can remain finite even when the magnitude overflows.
+        const double half_scale = std::exp(re / 2);
+        return Complex{(half_scale * std::cos(im)) * half_scale,
+                       (half_scale * std::sin(im)) * half_scale};
+    }
     Complex ex{std::exp(re) * std::cos(im), std::exp(re) * std::sin(im)};
     return ex;
 }

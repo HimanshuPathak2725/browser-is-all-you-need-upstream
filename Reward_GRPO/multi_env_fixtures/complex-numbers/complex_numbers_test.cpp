@@ -289,4 +289,37 @@ TEST_CASE("Operations between real numbers and complex numbers -> Divide real nu
     require_approx_equal(Complex(2.5,-2.5), 5.0 / c);
 }
 
+// Finite operands with representable answers remain in the stated double API
+// domain. Normalize magnitude before using the existing 0.005 tolerance.
+TEST_CASE("Absolute value remains representable across finite scales") {
+    for (double scale : {1e200, 1e-200}) {
+        const Complex value{3 * scale, 4 * scale};
+        REQUIRE_THAT(value.abs() / scale, Catch::Matchers::WithinAbs(5.0, eps));
+    }
+}
+
+TEST_CASE("Division preserves value across finite scales") {
+    for (double scale : {1e200, 1e-200}) {
+        const Complex left{scale, 2 * scale};
+        const Complex right{3 * scale, 4 * scale};
+        require_approx_equal(left / right, Complex{0.44, 0.08});
+        require_approx_equal(right / scale, Complex{3.0, 4.0});
+        require_approx_equal(scale / right, Complex{0.12, -0.16});
+    }
+}
+
+TEST_CASE("Multiplication keeps representable components after cancellation") {
+    const Complex value{1.4e154, 0.6e154};
+    const Complex product = value * value;
+    require_approx_equal(Complex{product.real() / 1e308, product.imag() / 1e308},
+                         Complex{1.6, 1.68});
+}
+
+TEST_CASE("Complex exponential keeps representable components") {
+    const Complex result = Complex{710.0, M_PI / 4}.exp();
+    // exp(710) / sqrt(2), expressed at a finite scale.
+    require_approx_equal(Complex{result.real() / 1e308, result.imag() / 1e308},
+                         Complex{1.579672848288201, 1.579672848288201});
+}
+
 #endif

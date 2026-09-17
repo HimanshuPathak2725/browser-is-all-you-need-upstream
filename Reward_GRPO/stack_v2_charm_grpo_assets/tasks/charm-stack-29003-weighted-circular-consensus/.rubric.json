@@ -1,0 +1,57 @@
+{
+  "action_topology": "header_only_or_template",
+  "api_capabilities": [
+    "implement_missing_api",
+    "preserve_api",
+    "extend_api",
+    "refactor_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "weighted-circular-consensus.h"
+  ],
+  "editable_layout": "header_only",
+  "family": "numerical-integrity",
+  "header_mode": "extended",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "6bfb4ad2efd9c2647864e22ae04b89e66b1c4161e7a2f0a89007458176e60547",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "circular_consensus::consensus",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "ae630ec419d8008e29c4bf4468df775f5358eed1ff462593eb6e759b43a44ab5",
+  "starter_type": "near_correct",
+  "task_id": "charm-stack-29003-weighted-circular-consensus",
+  "task_role": "boundary_case",
+  "title": "Weighted Circular Consensus"
+}

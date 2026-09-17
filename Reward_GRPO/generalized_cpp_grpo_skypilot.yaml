@@ -46,7 +46,7 @@ envs:
   MILES_CUSTOM_RM_PATH: Reward_GRPO.generalized_cpp_grpo.reward_func
   MILES_REWARD_PREFLIGHT_MODULE: Reward_GRPO.generalized_cpp_grpo
   MILES_EXPECTED_DATASET_KIND: aider-polyglot-cpp-shadow-grpo
-  MILES_EXPECTED_TRAIN_COUNT: "15"
+  MILES_EXPECTED_TRAIN_COUNT: "16"
   MILES_EVAL_NAME: generalized_cpp_monitor
   MILES_NUM_ROLLOUT: "20"
   MILES_ROLLOUT_BATCH_SIZE: "8"

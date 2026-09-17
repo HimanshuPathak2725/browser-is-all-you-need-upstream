@@ -16,7 +16,7 @@
     ".docs/instructions.md": "ffe687063cba8152035fd35c859651f8d28d44db8ec5967b39e7145883360d74",
     ".docs/introduction.md": "dff0a022809b89edfb055b2f3a5df1f27fe6dec2fadf0a3836185fd16e985a6a",
     ".meta/config.json": "c8a2656325d47550fb977e6986afc12d48554bd009600f370b200cf88a8ff858",
-    ".meta/example.cpp": "7de3a61604656aaabf9b797b34fc5760e5a1089bf23e47493e5ed213e7731e45",
+    ".meta/example.cpp": "81851532c34fa1abd720746ffa6667600693549e3edef7f23806f51b14bc74d7",
     ".meta/example.h": "7aa06621256ed069a24b771daf90b8124bf34c94cb18aabbf94724ba0d8dab2e",
     ".meta/tests.toml": "c995b54cfc24dd3a5946bf2720d81ebbbfaed0fa3ddefa091a4fd5d2afe00201",
     "CMakeLists.txt": "53d531120e650972adf19a2a42aa2d5bc716c93700ffac74c1c2868fdce633ff",

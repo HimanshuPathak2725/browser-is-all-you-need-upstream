@@ -65,6 +65,32 @@ _TOOL_FAILURE = re.compile(
     r"cannot open output file|file format not recognized)", re.I | re.M)
 
 
+def compiler_infrastructure_failure(returncode, stderr):
+    """Compiler crashes/tool failures are not ordinary C++ diagnostics."""
+    if returncode is not None and returncode < 0:
+        return "compiler_signal"
+    if _TOOL_FAILURE.search(stderr):
+        return "toolchain_failure"
+    return None
+
+
+def runtime_failure_diagnostic(output):
+    """Recognize useful runtime text without treating it as execution evidence."""
+    if re.search(r"^\S+: error while loading shared libraries:", output, re.M):
+        return "runtime_loader_failure"
+    if "Resource temporarily unavailable" in output:
+        return "runtime_resource_exhaustion"
+    return None
+
+
+def runtime_infrastructure_failure(output, *, launch_error=None, execution_completed=False):
+    """Require launch-layer evidence before attributing infrastructure failure."""
+    if execution_completed or not launch_error:
+        return None
+    return (runtime_failure_diagnostic(str(launch_error))
+            or runtime_failure_diagnostic(output) or "runtime_launch_failure")
+
+
 def _run(cmd, cwd, stage):
     try:
         proc = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE,

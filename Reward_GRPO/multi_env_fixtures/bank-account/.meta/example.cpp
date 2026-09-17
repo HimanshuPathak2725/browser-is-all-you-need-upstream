@@ -50,7 +50,7 @@ void Bankaccount::check_account_open() const {
 }
 
 void Bankaccount::check_amount_greater_zero(int amount) const {
-    if (amount < 0) {
+    if (amount <= 0) {
         throw std::runtime_error{"amount must be greater than 0"};
     }
 }

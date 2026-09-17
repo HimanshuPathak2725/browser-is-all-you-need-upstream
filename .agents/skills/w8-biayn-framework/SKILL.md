@@ -31,6 +31,10 @@ Main responsibilities:
 - SkyRL-Gym adapter: `src/w8_biayn/integrations/browsergym_env.py`
 - SkyRL registration entrypoint: `src/w8_biayn/integrations/skyrl_browsergym_main.py`
 - Harbor SkyRL registration entrypoint: `src/w8_biayn/integrations/skyrl_harbor_main.py`
+- Stack-v2 CHARM launcher: `launch_stack_v2_charm_grpo.sh`
+- Stack-v2 CHARM config and frozen assets: `Reward_GRPO/stack_v2_charm_grpo_skypilot.yaml`, `Reward_GRPO/stack_v2_charm_grpo_assets/`
+- C++ GRPO trainer wrapper and evaluation: `examples/grpo.sh`, `scripts/train_grpo.sh`, `scripts/evaluate.py`
+- C++ reward/data adapters: `Reward_GRPO/stack_v2_charm_grpo.py`, `src/glm47_posttraining/integrations/stack_v2_charm_run.py`
 - Tests: `tests/`
 
 ## Development Rules
@@ -155,3 +159,26 @@ uv run w8-biayn domdiff push-image --source-image android-world-domdiff:local --
 uv run w8-biayn launch r3 --with-local-domdiff --benchmark webvoyager-domdiff-heldout --dry-run
 uv run w8-biayn launch r3 --with-local-domdiff --benchmark harbor-domdiff-browser-swe --dry-run
 ```
+
+## Stack-v2 CHARM release path
+
+The active CHARM package contains 12 training, 7 validation, and 1 calibration
+task. It loads task data from the repository and the base/reference/warm-start
+checkpoints from the pinned GCS mounts. Do not describe the Wootzapp HF datasets
+or PEFT releases as runtime inputs unless the loader is deliberately changed and
+retested.
+
+Use `bash launch_stack_v2_charm_grpo.sh --preflight` for live HF/W&B checks and
+`--check` for post-authentication snapshot staging. Neither starts a cloud job.
+Never run `--launch` without explicit paid-training authorization.
+
+The established final publication target is the private
+`HimanshuPathak/Stackv2grpo` model repository. No Wootzapp replacement ID is
+authorized. Keep the publisher fail-closed to that exact destination until an
+explicit replacement exists. The pinned TokenBender GHCR runtime image is an
+active external dependency, not an HF model/data source; do not substitute an
+unverified image.
+
+Keep `.glm47-posttraining/`, Stack-v2 authoring workspaces, migration clones,
+logs, receipts, and generated datasets ignored. The distributable package is the
+runtime code plus the frozen assets under `Reward_GRPO/`.

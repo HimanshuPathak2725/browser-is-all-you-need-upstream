@@ -1,0 +1,58 @@
+{
+  "action_topology": "header_and_source",
+  "api_capabilities": [
+    "implement_missing_api",
+    "preserve_api",
+    "extend_api",
+    "refactor_api"
+  ],
+  "category": "C++17 repository edit",
+  "criteria": [
+    {
+      "id": "api",
+      "requirement": "Public API remains complete and source-compatible.",
+      "weight": 0.2
+    },
+    {
+      "id": "behavior",
+      "requirement": "All behavioral and boundary contracts pass.",
+      "weight": 0.45
+    },
+    {
+      "id": "robustness",
+      "requirement": "Invalid input and state transitions are handled transactionally.",
+      "weight": 0.2
+    },
+    {
+      "id": "quality",
+      "requirement": "C++17/20 warning-clean, deterministic, portable standard-library implementation.",
+      "weight": 0.15
+    }
+  ],
+  "difficulty": "hard",
+  "editable_files": [
+    "suffix-fragment-reassembler.h",
+    "suffix-fragment-reassembler.cpp"
+  ],
+  "editable_layout": "header_and_cpp",
+  "family": "sequence-incremental",
+  "header_mode": "repaired",
+  "hidden_test_file": ".meta/hidden_test.cpp",
+  "hidden_test_sha256": "be92224a19da29633201b218c5e40126e1881cf89ba58c0e3e72be03d87420ef",
+  "protected_paths": [
+    ".docs",
+    ".meta",
+    ".reference",
+    ".grader",
+    ".provenance.json",
+    ".rubric.json",
+    "CMakeLists.txt"
+  ],
+  "public_api": "class suffix_reassembly::Reassembler",
+  "schema_version": "charm-task-rubric-v1",
+  "source_prompt_sha256": "a5bf6162d40319cfaa43b5dae47bbfc75716eb9bd2cae2cffd8c18e40b97535f",
+  "starter_type": "compile_bug",
+  "task_id": "charm-stack-29003-suffix-fragment-reassembler",
+  "task_role": "repair_trajectory",
+  "title": "Suffix Fragment Reassembler"
+}

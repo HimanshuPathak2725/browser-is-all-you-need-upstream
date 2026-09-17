@@ -55,3 +55,29 @@ TEST_CASE(
                 .normalized_cipher_text());
 }
 #endif
+
+#if defined(EXERCISM_RUN_ALL_TESTS)
+TEST_CASE("plaintext helpers expose normalized rows and column-order ciphertext") {
+    const crypto_square::cipher cipher(" A!b@C#d$E%f ");
+    (void)cipher.size();
+    REQUIRE(cipher.normalize_plain_text() == "abcdef");
+    REQUIRE((cipher.plain_text_segments() ==
+             std::vector<std::string>{"abc", "def"}));
+    REQUIRE(cipher.cipher_text() == "adbecf");
+}
+
+TEST_CASE("plaintext helpers preserve a short final row without padding") {
+    const crypto_square::cipher cipher("abcde");
+    REQUIRE(cipher.normalize_plain_text() == "abcde");
+    REQUIRE((cipher.plain_text_segments() ==
+             std::vector<std::string>{"abc", "de"}));
+    REQUIRE(cipher.cipher_text() == "adbec");
+}
+
+TEST_CASE("plaintext helpers return empty results after normalization") {
+    const crypto_square::cipher cipher("... --- ...");
+    REQUIRE(cipher.normalize_plain_text().empty());
+    REQUIRE(cipher.plain_text_segments().empty());
+    REQUIRE(cipher.cipher_text().empty());
+}
+#endif

@@ -18,6 +18,14 @@ from Reward_GRPO import stack_v2_charm_grpo as base
 
 CURRICULUM = "stack-v2-charm-12x30-v1"
 PROFILE = "stack-v2-charm-12x30-grpo45"
+RUNTIME_SCRIPTS = {
+    "charm_grpo_hub.py",
+    "check_runtime.py",
+    "create_grpo_training_gate.py",
+    "prepare_grpo_adapter.py",
+    "publish_results.py",
+    "train_grpo.sh",
+}
 VALIDATION = base.VALIDATION | {base.PREFIX + "coalescing-range-allocator", base.PREFIX + "route-window-enumerator"}
 SPLIT = {"validation": sorted(VALIDATION), "calibration": [base.CALIBRATION],
          "train": "all remaining frozen registry tasks", "counts": [12, 7, 1]}
@@ -142,6 +150,9 @@ def stage_launch(args):
     with tempfile.TemporaryDirectory(prefix="charm-worker-launch-", dir=output.parent) as tmp:
         stage = Path(tmp) / "snapshot"
         base.stage_launch(argparse.Namespace(out=stage, run_id=args.run_id))
+        for path in (stage / "scripts").iterdir():
+            if path.name not in RUNTIME_SCRIPTS:
+                shutil.rmtree(path) if path.is_dir() else path.unlink()
         # Python imports this top-level module at startup in each Ray worker.
         shutil.copy2(repo / "src/sitecustomize.py", stage / "src/sitecustomize.py")
         manifest = base.read_json(stage / "launch-manifest.json")
